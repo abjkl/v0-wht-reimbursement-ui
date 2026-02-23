@@ -68,22 +68,26 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                 <input type="checkbox" className="rounded border" />
               </TableHead>
               <TableHead className="w-[140px]">Request ID</TableHead>
-              <TableHead className="w-[110px]">Submission Date</TableHead>
-              <TableHead className="w-[180px]">Requestor Email</TableHead>
-              <TableHead className="w-[140px]">Transaction Type</TableHead>
+              <TableHead className="w-[130px]">Submission Date</TableHead>
+              <TableHead className="w-[200px]">Email</TableHead>
+              <TableHead className="w-[160px]">Username Toko Shopee</TableHead>
+              <TableHead className="w-[180px]">Company Name</TableHead>
               <TableHead className="w-[140px]">Invoice Number</TableHead>
-              <TableHead className="w-[120px] text-right">Amount</TableHead>
-              <TableHead className="w-[120px]">Status</TableHead>
-              <TableHead className="w-[140px]">AI Suggestion</TableHead>
-              <TableHead className="w-[100px]">Injection</TableHead>
+              <TableHead className="w-[140px] text-right">Requested Amount (IDR)</TableHead>
               <TableHead className="w-[80px]">Docs</TableHead>
-              <TableHead className="w-[120px]">Action</TableHead>
+              <TableHead className="w-[120px]">Status</TableHead>
+              <TableHead className="w-[120px]">AI Suggestion</TableHead>
+              <TableHead className="w-[100px]">AI Confidence</TableHead>
+              <TableHead className="w-[140px]">Approver</TableHead>
+              <TableHead className="w-[120px]">Approval Date</TableHead>
+              <TableHead className="w-[120px]">Injection Status</TableHead>
+              <TableHead className="w-[120px]">Injection Date</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {requests.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={12} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={16} className="h-32 text-center text-muted-foreground">
                   No requests found
                 </TableCell>
               </TableRow>
@@ -93,6 +97,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                   <TableCell>
                     <input type="checkbox" className="rounded border" />
                   </TableCell>
+                  {/* Seller-submitted fields first */}
                   <TableCell className="font-mono text-sm">
                     <Link href={`/wht-requests/${req.id}`} className="text-primary hover:underline">
                       {req.id}
@@ -100,42 +105,21 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                   </TableCell>
                   <TableCell className="text-sm">{formatDate(req.submissionDate)}</TableCell>
                   <TableCell className="text-sm">{req.requestorEmail}</TableCell>
-                  <TableCell className="text-sm">{req.transactionType}</TableCell>
+                  <TableCell className="text-sm">{req.usernameShopee || req.merchantName || '—'}</TableCell>
+                  <TableCell className="text-sm">{req.companyName}</TableCell>
                   <TableCell className="font-mono text-sm">{req.invoiceNumber}</TableCell>
                   <TableCell className="text-right text-sm">
                     {formatCurrency(req.requestedReimbursementAmount)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getStatusBadgeVariant(req.status)} className="text-xs">
-                      {req.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={getAISuggestionBadgeVariant(req.aiSuggestion)} className="text-xs">
-                        {req.aiSuggestion === 'Approve' ? 'Approve' : req.aiSuggestion === 'Reject' ? 'Reject' : 'Review'}
-                      </Badge>
-                      {req.aiConfidence > 0 && (
-                        <span className="text-xs text-muted-foreground">
-                          {Math.round(req.aiConfidence * 100)}%
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={getInjectionBadgeVariant(req.injectionStatus)} className="text-xs">
-                      {req.injectionStatus}
-                    </Badge>
                   </TableCell>
                   <TableCell>
                     <TooltipProvider>
                       <div className="flex items-center gap-1">
                         <Tooltip>
                           <TooltipTrigger>
-                            <DocIcon complete={req.docsComplete.whtSlip} />
+                            <DocIcon complete={req.docsComplete.invoice} />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>WHT Slip {req.docsComplete.whtSlip ? '✓' : '✗'}</p>
+                            <p>Shopee Invoice {req.docsComplete.invoice ? 'uploaded' : 'missing'}</p>
                           </TooltipContent>
                         </Tooltip>
                         <Tooltip>
@@ -143,26 +127,45 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                             <DocIcon complete={req.docsComplete.taxInvoice} />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Tax Invoice {req.docsComplete.taxInvoice ? '✓' : '✗'}</p>
+                            <p>Tax Invoice {req.docsComplete.taxInvoice ? 'uploaded' : 'missing'}</p>
                           </TooltipContent>
                         </Tooltip>
                         <Tooltip>
                           <TooltipTrigger>
-                            <DocIcon complete={req.docsComplete.invoice} />
+                            <DocIcon complete={req.docsComplete.whtSlip} />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Invoice {req.docsComplete.invoice ? '✓' : '✗'}</p>
+                            <p>WHT Slip {req.docsComplete.whtSlip ? 'uploaded' : 'missing'}</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
                     </TooltipProvider>
                   </TableCell>
+                  {/* System-generated fields */}
                   <TableCell>
-                    <div className="flex flex-col gap-1">
-                      <Link href={`/wht-requests/${req.id}`} className="text-sm text-primary hover:underline">
-                        Review
-                      </Link>
-                    </div>
+                    <Badge variant={getStatusBadgeVariant(req.status)} className="text-xs">
+                      {req.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getAISuggestionBadgeVariant(req.aiSuggestion)} className="text-xs">
+                      {req.aiSuggestion}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {req.aiConfidence > 0 ? `${Math.round(req.aiConfidence * 100)}%` : '—'}
+                  </TableCell>
+                  <TableCell className="text-sm">{req.approverName || '—'}</TableCell>
+                  <TableCell className="text-sm">
+                    {req.approvalDate ? formatDate(req.approvalDate) : '—'}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getInjectionBadgeVariant(req.injectionStatus)} className="text-xs">
+                      {req.injectionStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {req.injectionDate ? formatDate(req.injectionDate) : '—'}
                   </TableCell>
                 </TableRow>
               ))

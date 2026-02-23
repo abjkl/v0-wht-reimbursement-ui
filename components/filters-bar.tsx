@@ -11,28 +11,15 @@ export function FiltersBar() {
 
   return (
     <div className="space-y-4 rounded-lg border bg-card p-4">
-      {/* First Row - Search and Primary Filters */}
+      {/* Core Filters */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Search</Label>
-          <div className="flex gap-2">
-            <Select defaultValue="request-id">
-              <SelectTrigger className="w-[140px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="request-id">Request ID</SelectItem>
-                <SelectItem value="email">Email</SelectItem>
-                <SelectItem value="company">Company</SelectItem>
-              </SelectContent>
-            </Select>
-            <Input
-              placeholder="Input"
-              value={filters.search}
-              onChange={(e) => setFilters({ search: e.target.value })}
-              className="flex-1"
-            />
-          </div>
+          <Label className="text-xs text-muted-foreground">Global Search</Label>
+          <Input
+            placeholder="Search by Request ID, Email, Username, Company, Invoice..."
+            value={filters.search}
+            onChange={(e) => setFilters({ search: e.target.value })}
+          />
         </div>
 
         <div className="space-y-2">
@@ -52,36 +39,106 @@ export function FiltersBar() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Transaction Type</Label>
+          <Label className="text-xs text-muted-foreground">Submission Date Range</Label>
+          <div className="flex gap-2">
+            <Input
+              type="date"
+              value={filters.dateRange.start || ''}
+              onChange={(e) => setFilters({ dateRange: { ...filters.dateRange, start: e.target.value } })}
+              placeholder="Start"
+            />
+            <Input
+              type="date"
+              value={filters.dateRange.end || ''}
+              onChange={(e) => setFilters({ dateRange: { ...filters.dateRange, end: e.target.value } })}
+              placeholder="End"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Operational Filters */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">AI Suggestion</Label>
           <Select
-            value={filters.transactionType}
-            onValueChange={(value: any) => setFilters({ transactionType: value })}
+            value={filters.aiSuggestion || 'All'}
+            onValueChange={(value: any) => setFilters({ aiSuggestion: value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">All Types</SelectItem>
-              <SelectItem value="MP Platform">MP Platform</SelectItem>
-              <SelectItem value="Food Platform Invoice">Food Platform Invoice</SelectItem>
-              <SelectItem value="SVS Prepaid Invoice">SVS Prepaid Invoice</SelectItem>
-              <SelectItem value="AMS PPS">AMS PPS</SelectItem>
-              <SelectItem value="AMS PPP">AMS PPP</SelectItem>
-              <SelectItem value="FBS">FBS</SelectItem>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="Approve">Approve</SelectItem>
+              <SelectItem value="Reject">Reject</SelectItem>
+              <SelectItem value="Pending Review">Pending Review</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">Docs Completeness</Label>
+          <Select
+            value={filters.missingDocs}
+            onValueChange={(value: any) => setFilters({ missingDocs: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="Complete">Complete (3/3)</SelectItem>
+              <SelectItem value="Missing WHT Slip">Missing WHT Slip</SelectItem>
+              <SelectItem value="Missing Tax Invoice">Missing Tax Invoice</SelectItem>
+              <SelectItem value="Missing Shopee Invoice">Missing Shopee Invoice</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">Injection Status</Label>
+          <Select
+            value={filters.injectionStatus}
+            onValueChange={(value: any) => setFilters({ injectionStatus: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All</SelectItem>
+              <SelectItem value="Done">Done</SelectItem>
+              <SelectItem value="Not Started">Not Started</SelectItem>
+              <SelectItem value="Failed">Failed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">Amount Range</Label>
+          <Select
+            value={filters.amountRange}
+            onValueChange={(value: any) => setFilters({ amountRange: value })}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Amounts</SelectItem>
+              <SelectItem value="<= 1000000">≤ Rp 1,000,000</SelectItem>
+              <SelectItem value="1000001-10000000">Rp 1M - 10M</SelectItem>
+              <SelectItem value="> 10000000">&gt; Rp 10,000,000</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* View All Link */}
-      <div className="flex items-center justify-between border-t pt-4">
-        <button className="text-sm text-primary hover:underline">View All</button>
-        <div className="flex gap-2">
-          <Button onClick={() => {/* Apply search */}}>Search</Button>
-          <Button variant="outline" onClick={resetFilters}>
-            Reset
-          </Button>
-        </div>
+      {/* Actions */}
+      <div className="flex items-center justify-end gap-2 border-t pt-4">
+        <Button variant="outline" onClick={resetFilters}>
+          Reset
+        </Button>
+        <Button>Apply Filters</Button>
       </div>
     </div>
   );

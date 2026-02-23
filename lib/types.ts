@@ -75,6 +75,7 @@ export interface FilterState {
   transactionType: TransactionType | "All";
   sellerType: SellerType | "All";
   injectionStatus: InjectionStatus | "All";
+  aiSuggestion?: AISuggestion | "All";
   approver: "All" | "Empty" | "Me" | string;
   dateRange: {
     start?: string;
