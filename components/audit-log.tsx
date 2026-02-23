@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { AuditLogEntry } from '@/lib/types';
@@ -20,6 +21,12 @@ function formatTimestamp(timestamp: string) {
 }
 
 export function AuditLog({ entries }: AuditLogProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -33,7 +40,7 @@ export function AuditLog({ entries }: AuditLogProps) {
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{entry.action}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatTimestamp(entry.timestamp)}
+                    {mounted ? formatTimestamp(entry.timestamp) : '—'}
                   </p>
                 </div>
                 <p className="text-xs text-muted-foreground">{entry.actor}</p>

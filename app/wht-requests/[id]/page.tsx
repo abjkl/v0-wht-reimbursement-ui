@@ -144,9 +144,9 @@ export default function RequestDetailPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden pb-32">
+      <div className="flex flex-1 overflow-hidden">
         {/* Left Panel - Request Details */}
-        <div className="w-2/5 space-y-4 overflow-auto border-r p-6">
+        <div className="w-2/5 space-y-4 overflow-auto border-r p-6 pb-48">
           {/* Request Summary */}
           <Card>
             <CardHeader>
