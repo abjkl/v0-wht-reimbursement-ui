@@ -123,22 +123,41 @@ export default function RequestDetailPage() {
 
   return (
     <div className="flex h-screen flex-col bg-background">
+      {/* Breadcrumb */}
+      <div className="border-b bg-background px-6 py-3">
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <button
+            onClick={() => router.push('/wht-requests')}
+            className="flex items-center gap-1 hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back
+          </button>
+          <span>{'>'}</span>
+          <span>WHT Requests</span>
+          <span>{'>'}</span>
+          <span className="text-foreground">WHT Request Detail</span>
+        </div>
+      </div>
+
       {/* Header */}
-      <div className="border-b bg-card">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => router.push('/wht-requests')}>
-              <ArrowLeft className="h-5 w-5" />
+      <div className="border-b bg-background px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-semibold">WHT Request</h1>
+            <span className="text-muted-foreground">{'◀'}</span>
+            <span className="font-medium">{request.id}</span>
+            <Badge variant={getStatusBadgeVariant(request.status)} className="text-xs">
+              {request.status}
+            </Badge>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm">
+              Attachments
             </Button>
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold">{request.id}</h1>
-                <Badge variant={getStatusBadgeVariant(request.status)}>{request.status}</Badge>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Submitted {formatDate(request.submissionDate)} by {request.requestorEmail}
-              </p>
-            </div>
+            <Button variant="outline" size="sm">
+              Processing Progress
+            </Button>
           </div>
         </div>
       </div>
@@ -146,152 +165,131 @@ export default function RequestDetailPage() {
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel - Request Details */}
-        <div className="w-2/5 space-y-4 overflow-auto border-r p-6 pb-48">
-          {/* Request Summary */}
+        <div className="w-1/2 space-y-6 overflow-auto border-r p-6 pb-32">
+          {/* Request ID Card */}
           <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Request Summary</CardTitle>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg font-semibold">{request.id}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 gap-3 text-sm">
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div>
-                  <p className="text-muted-foreground">Transaction Type</p>
-                  <p className="font-medium">{request.transactionType}</p>
+                  <p className="text-sm font-medium text-foreground">Request ID</p>
+                  <p className="text-sm text-primary">{request.id}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Party Type</p>
-                  <p className="font-medium">{request.sellerType}</p>
+                  <p className="text-sm font-medium text-foreground">Transaction Type</p>
+                  <p className="text-sm">{request.transactionType}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Submission Date</p>
+                  <p className="text-sm">{formatDate(request.submissionDate)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Invoice Number</p>
+                  <p className="text-sm">{request.invoiceNumber}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Requestor Email</p>
+                  <p className="text-sm">{request.requestorEmail}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Party Type</p>
+                  <p className="text-sm">{request.sellerType}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-muted-foreground">Company Name</p>
-                  <p className="font-medium">{request.companyName}</p>
+                  <p className="text-sm font-medium text-foreground">Company Name</p>
+                  <p className="text-sm">{request.companyName}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-muted-foreground">
+                  <p className="text-sm font-medium text-foreground">
                     {request.usernameShopee ? 'Username Shopee' : 'Merchant Name'}
                   </p>
-                  <p className="font-medium">{request.usernameShopee || request.merchantName}</p>
+                  <p className="text-sm">{request.usernameShopee || request.merchantName}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Requested Amount</p>
+                  <p className="text-sm font-semibold">{formatCurrency(request.requestedReimbursementAmount)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Status</p>
+                  <Badge variant={getStatusBadgeVariant(request.status)} className="text-xs">
+                    {request.status}
+                  </Badge>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* IDs */}
-          {(request.shopId || request.merchantId) && (
+          {/* Additional Details */}
+          {(request.shopId || request.merchantId || request.userId) && (
             <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Identifiers</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="grid grid-cols-2 gap-3 text-sm">
+              <CardContent className="space-y-4 pt-6">
+                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                   {request.shopId && (
                     <div>
-                      <p className="text-muted-foreground">Shop ID</p>
-                      <p className="font-mono text-xs">{request.shopId}</p>
+                      <p className="text-sm font-medium text-foreground">Shop ID</p>
+                      <p className="font-mono text-sm">{request.shopId}</p>
                     </div>
                   )}
                   {request.userId && (
                     <div>
-                      <p className="text-muted-foreground">User ID</p>
-                      <p className="font-mono text-xs">{request.userId}</p>
+                      <p className="text-sm font-medium text-foreground">User ID</p>
+                      <p className="font-mono text-sm">{request.userId}</p>
                     </div>
                   )}
                   {request.merchantId && (
                     <div>
-                      <p className="text-muted-foreground">Merchant ID</p>
-                      <p className="font-mono text-xs">{request.merchantId}</p>
+                      <p className="text-sm font-medium text-foreground">Merchant ID</p>
+                      <p className="font-mono text-sm">{request.merchantId}</p>
                     </div>
                   )}
                   {request.storeId && (
                     <div>
-                      <p className="text-muted-foreground">Store ID</p>
-                      <p className="font-mono text-xs">{request.storeId}</p>
+                      <p className="text-sm font-medium text-foreground">Store ID</p>
+                      <p className="font-mono text-sm">{request.storeId}</p>
                     </div>
                   )}
                   {request.settleTo && (
                     <div>
-                      <p className="text-muted-foreground">Settle To</p>
-                      <p className="text-xs">{request.settleTo}</p>
+                      <p className="text-sm font-medium text-foreground">Settle To</p>
+                      <p className="text-sm">{request.settleTo}</p>
                     </div>
                   )}
                   {request.midSid && (
                     <div>
-                      <p className="text-muted-foreground">MID/SID</p>
-                      <p className="font-mono text-xs">{request.midSid}</p>
+                      <p className="text-sm font-medium text-foreground">MID/SID</p>
+                      <p className="font-mono text-sm">{request.midSid}</p>
+                    </div>
+                  )}
+                  {request.approverName && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Approver</p>
+                      <p className="text-sm">{request.approverName}</p>
+                    </div>
+                  )}
+                  {request.approvalDate && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Approval Date</p>
+                      <p className="text-sm">{formatDate(request.approvalDate)}</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Injection Status</p>
+                    <Badge variant={request.injectionStatus === 'Done' ? 'default' : 'secondary'} className="text-xs">
+                      {request.injectionStatus}
+                    </Badge>
+                  </div>
+                  {request.injectionDate && (
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Injection Date</p>
+                      <p className="text-sm">{formatDate(request.injectionDate)}</p>
                     </div>
                   )}
                 </div>
               </CardContent>
             </Card>
           )}
-
-          {/* Finance */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Finance Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Invoice Number</p>
-                  <p className="font-mono text-xs">{request.invoiceNumber}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Requested Reimbursement</p>
-                  <p className="text-lg font-bold">{formatCurrency(request.requestedReimbursementAmount)}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-muted-foreground">Approval Status</p>
-                    <p className="font-medium">{request.approvalStatusYN || '—'}</p>
-                  </div>
-                  <div>
-                    <p className="text-muted-foreground">Injection Status</p>
-                    <Badge variant={request.injectionStatus === 'Done' ? 'default' : 'secondary'}>
-                      {request.injectionStatus}
-                    </Badge>
-                  </div>
-                </div>
-                {request.injectionDate && (
-                  <div>
-                    <p className="text-muted-foreground">Injection Date</p>
-                    <p className="font-medium">{formatDate(request.injectionDate)}</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Approval Info */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Approval Information</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Approver</p>
-                  <p className="text-xs">{request.approverName || '—'}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Approval Date</p>
-                  <p className="font-medium">
-                    {request.approvalDate ? formatDate(request.approvalDate) : '—'}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Notes</p>
-                <Textarea
-                  value={notes || request.notes || ''}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Add notes..."
-                  className="mt-2"
-                  rows={3}
-                />
-              </div>
-            </CardContent>
-          </Card>
 
           {/* AI Review */}
           <AIReviewPanel request={request} />
@@ -308,35 +306,34 @@ export default function RequestDetailPage() {
 
       {/* Sticky Bottom Actions */}
       {request.status !== 'Approved' && request.status !== 'Rejected' && (
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card shadow-lg">
-          <div className="mx-auto max-w-md space-y-3 p-6">
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-lg">
+          <div className="flex items-center justify-between px-6 py-4">
             <Button
-              className="w-full"
-              size="lg"
-              onClick={handleAcceptAI}
-              disabled={request.aiSuggestion === 'Pending Review'}
+              variant="outline"
+              onClick={() => setShowRejectDialog(true)}
             >
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Accept AI Suggestion
+              Reject to Requestor
             </Button>
-            <div className="grid grid-cols-2 gap-3">
-              <Button variant="outline" size="lg" onClick={() => setShowApproveDialog(true)}>
-                Approve
-              </Button>
-              <Button variant="destructive" size="lg" onClick={() => setShowRejectDialog(true)}>
-                Reject
-              </Button>
+            <div className="flex gap-2">
+              {request.aiSuggestion !== 'Pending Review' && (
+                <Button
+                  variant="outline"
+                  onClick={handleAcceptAI}
+                >
+                  <CheckCircle className="mr-2 h-4 w-4" />
+                  Accept AI Suggestion
+                </Button>
+              )}
+              {nextRequest ? (
+                <Button onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}>
+                  Next Step
+                </Button>
+              ) : (
+                <Button onClick={() => setShowApproveDialog(true)}>
+                  Approve
+                </Button>
+              )}
             </div>
-            {nextRequest && (
-              <Button
-                variant="ghost"
-                className="w-full"
-                onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}
-              >
-                Next Request
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            )}
           </div>
         </div>
       )}
