@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, CheckCircle, XCircle, ChevronRight, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
   Dialog,
@@ -53,27 +53,227 @@ export default function RequestDetailPage() {
     );
   }
 
-  // Validation checks
-  const validationChecks = [
-    {
-      label: 'Docs Complete',
-      passed: request.docsComplete.invoice && request.docsComplete.taxInvoice && request.docsComplete.whtSlip,
-    },
-    {
-      label: 'Invoice Valid',
-      passed: !!request.invoiceNumber,
-    },
-    {
-      label: 'Amount Valid',
-      passed: request.requestedReimbursementAmount > 0,
-    },
-    {
-      label: 'Company Info',
-      passed: !!(request.sellerCompanyName || request.syncedCompanyName),
-    }
-  ];
+  // Indonesia WHT (PPh23) Validation Checks
+  type CheckStatus = 'pass' | 'warn' | 'fail';
+  type ValidationCheck = {
+    section: string;
+    label: string;
+    status: CheckStatus;
+    helper: string;
+    reason?: string;
+  };
 
-  const passedChecks = validationChecks.filter(c => c.passed).length;
+  const wht = request.extracted?.whtSlip;
+  const tax = request.extracted?.taxInvoice;
+  const shopee = request.extracted?.shopeeInvoice;
+
+  const validationChecks: ValidationCheck[] = [];
+
+  // SECTION A — Document Completeness
+  validationChecks.push({
+    section: 'Document Completeness',
+    label: 'WHT Slip Uploaded',
+    status: request.whtSlipUrl ? 'pass' : 'fail',
+    helper: 'WHT slip document must be attached',
+    reason: !request.whtSlipUrl ? 'Document missing' : undefined
+  });
+  validationChecks.push({
+    section: 'Document Completeness',
+    label: 'Tax Invoice Uploaded',
+    status: request.taxInvoiceUrl ? 'pass' : 'fail',
+    helper: 'Tax invoice document must be attached',
+    reason: !request.taxInvoiceUrl ? 'Document missing' : undefined
+  });
+  validationChecks.push({
+    section: 'Document Completeness',
+    label: 'Shopee Invoice Uploaded',
+    status: request.invoiceUrl ? 'pass' : 'fail',
+    helper: 'Shopee commercial invoice must be attached',
+    reason: !request.invoiceUrl ? 'Document missing' : undefined
+  });
+
+  // SECTION B — Identity Validation
+  const entityMatch = () => {
+    if (!wht?.taxpayerNpwp || !tax?.issuerNpwp) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    const npwpMatch = wht.taxpayerNpwp === tax.issuerNpwp;
+    const nameMatch = wht.taxpayerName?.toLowerCase() === tax.issuerName?.toLowerCase();
+    if (!npwpMatch || !nameMatch) return { status: 'fail' as CheckStatus, reason: 'NPWP/Name mismatch' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const entityResult = entityMatch();
+  validationChecks.push({
+    section: 'Identity Validation',
+    label: 'Entity Identity Match (Shopee)',
+    status: entityResult.status,
+    helper: 'Taxpayer NPWP/Name must match tax invoice issuer',
+    reason: entityResult.reason
+  });
+
+  const collectorMatch = () => {
+    if (!wht?.collectorNpwp || !tax?.buyerNpwp) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    const npwpMatch = wht.collectorNpwp === tax.buyerNpwp;
+    const nameMatch = wht.collectorName?.toLowerCase() === tax.buyerName?.toLowerCase();
+    if (!npwpMatch || !nameMatch) return { status: 'fail' as CheckStatus, reason: 'NPWP/Name mismatch' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const collectorResult = collectorMatch();
+  validationChecks.push({
+    section: 'Identity Validation',
+    label: 'Collector Identity Match (Seller/Merchant)',
+    status: collectorResult.status,
+    helper: 'Collector NPWP/Name must match tax invoice buyer',
+    reason: collectorResult.reason
+  });
+
+  // SECTION C — Invoice Matching
+  const invoiceRefMatch = () => {
+    if (!wht?.referencedInvoiceNumber) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    const ref = wht.referencedInvoiceNumber;
+    const matches = 
+      ref === tax?.taxInvoiceNumber ||
+      ref === request.invoiceNumber ||
+      ref === shopee?.invoiceNumberOcr;
+    if (!matches) return { status: 'fail' as CheckStatus, reason: 'Referenced invoice not found' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const invoiceRefResult = invoiceRefMatch();
+  validationChecks.push({
+    section: 'Invoice Matching',
+    label: 'Invoice Reference Match (B9)',
+    status: invoiceRefResult.status,
+    helper: 'Referenced invoice must match tax or Shopee invoice',
+    reason: invoiceRefResult.reason
+  });
+
+  validationChecks.push({
+    section: 'Invoice Matching',
+    label: 'Single Invoice per Slip',
+    status: 'pass',
+    helper: 'MVP: one request = one invoice',
+  });
+
+  // SECTION D — Tax Calculation
+  const allowedCodes = ['24-104-18', '24-104-34', '24-104-02'];
+  const codeCheck = () => {
+    if (!wht?.whtCode) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    if (!allowedCodes.includes(wht.whtCode)) return { status: 'fail' as CheckStatus, reason: 'Code not allowed' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const codeResult = codeCheck();
+  validationChecks.push({
+    section: 'Tax Calculation',
+    label: 'WHT Code Allowed (B3)',
+    status: codeResult.status,
+    helper: 'Must be 24-104-18, 24-104-34, or 24-104-02',
+    reason: codeResult.reason
+  });
+
+  const rateCheck = () => {
+    if (wht?.whtRate == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    if (wht.whtRate !== 2) return { status: 'fail' as CheckStatus, reason: 'Rate must be 2%' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const rateResult = rateCheck();
+  validationChecks.push({
+    section: 'Tax Calculation',
+    label: 'WHT Rate = 2% (B6)',
+    status: rateResult.status,
+    helper: 'WHT rate must be exactly 2%',
+    reason: rateResult.reason
+  });
+
+  const taxBaseCheck = () => {
+    if (wht?.taxBase == null || tax?.dppTaxBase == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    if (wht.taxBase !== tax.dppTaxBase) return { status: 'fail' as CheckStatus, reason: 'Tax base mismatch' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const taxBaseResult = taxBaseCheck();
+  validationChecks.push({
+    section: 'Tax Calculation',
+    label: 'Tax Base Match (B5)',
+    status: taxBaseResult.status,
+    helper: 'WHT slip tax base must equal tax invoice DPP',
+    reason: taxBaseResult.reason
+  });
+
+  const whtAmountCheck = () => {
+    if (wht?.taxBase == null || wht?.whtAmount == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    const expected = Math.round(0.02 * wht.taxBase);
+    const diff = Math.abs(wht.whtAmount - expected);
+    if (diff > 10) return { status: 'fail' as CheckStatus, reason: 'Amount not within ±10 tolerance' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const whtAmountResult = whtAmountCheck();
+  validationChecks.push({
+    section: 'Tax Calculation',
+    label: 'WHT Amount Correct (B7)',
+    status: whtAmountResult.status,
+    helper: 'WHT amount = 2% of tax base (±10 tolerance)',
+    reason: whtAmountResult.reason
+  });
+
+  const requestedAmountCheck = () => {
+    if (wht?.whtAmount == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+    const diff = Math.abs(request.requestedReimbursementAmount - wht.whtAmount);
+    if (diff > 10) return { status: 'warn' as CheckStatus, reason: 'Difference > 10' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const requestedAmountResult = requestedAmountCheck();
+  validationChecks.push({
+    section: 'Tax Calculation',
+    label: 'Requested Amount Matches WHT',
+    status: requestedAmountResult.status,
+    helper: 'Requested amount should match WHT slip amount',
+    reason: requestedAmountResult.reason
+  });
+
+  // SECTION E — Compliance & Eligibility
+  const exemptionCheck = () => {
+    if (request.exemptionPeriod == null) return { status: 'warn' as CheckStatus, reason: 'Policy config needed' };
+    if (request.exemptionPeriod.isInExemption) return { status: 'fail' as CheckStatus, reason: 'In exemption period' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const exemptionResult = exemptionCheck();
+  validationChecks.push({
+    section: 'Compliance & Eligibility',
+    label: 'Not in Exemption Period (SKB)',
+    status: exemptionResult.status,
+    helper: 'Seller must not have active tax exemption',
+    reason: exemptionResult.reason
+  });
+
+  const duplicateCheck = () => {
+    if (request.duplicate == null) return { status: 'warn' as CheckStatus, reason: 'Duplicate check not available' };
+    if (request.duplicate.isDuplicate) return { status: 'fail' as CheckStatus, reason: 'Duplicate submission detected' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const duplicateResult = duplicateCheck();
+  validationChecks.push({
+    section: 'Compliance & Eligibility',
+    label: 'Not Duplicate Submission',
+    status: duplicateResult.status,
+    helper: 'Request must not be a duplicate',
+    reason: duplicateResult.reason
+  });
+
+  const eligibilityCheck = () => {
+    if (request.eligibility == null) return { status: 'warn' as CheckStatus, reason: 'Eligibility not evaluated' };
+    if (!request.eligibility.isEligible) return { status: 'fail' as CheckStatus, reason: request.eligibility.reason || 'Not eligible' };
+    return { status: 'pass' as CheckStatus };
+  };
+  const eligibilityResult = eligibilityCheck();
+  validationChecks.push({
+    section: 'Compliance & Eligibility',
+    label: 'Eligible for Reimbursement',
+    status: eligibilityResult.status,
+    helper: 'Seller type and transaction must be eligible',
+    reason: eligibilityResult.reason
+  });
+
+  // Summary counts
+  const passedChecks = validationChecks.filter(c => c.status === 'pass').length;
+  const warnChecks = validationChecks.filter(c => c.status === 'warn').length;
+  const failedChecks = validationChecks.filter(c => c.status === 'fail').length;
 
   const handleApprove = () => {
     updateRequest(request.id, {
@@ -190,7 +390,7 @@ export default function RequestDetailPage() {
       </div>
 
       {/* AI Review Suggestion Bar */}
-      <div className="border-b bg-card px-6 py-4">
+      <div className="relative border-b bg-card px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
@@ -219,35 +419,81 @@ export default function RequestDetailPage() {
                 {Object.values(request.docsComplete).filter(Boolean).length}/3
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">Validation Checks:</span>
               <div className="flex items-center gap-2">
-                {(showAllValidationChecks ? validationChecks : validationChecks.slice(0, 2)).map((check, idx) => (
-                  <div 
-                    key={idx} 
-                    className="flex items-center gap-1 rounded-md border bg-background px-2 py-0.5"
-                  >
-                    {check.passed ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-                    ) : (
-                      <XCircle className="h-3.5 w-3.5 text-destructive" />
-                    )}
-                    <span className="text-xs font-medium">{check.label}</span>
-                  </div>
-                ))}
-                {validationChecks.length > 2 && (
-                  <button
-                    onClick={() => setShowAllValidationChecks(!showAllValidationChecks)}
-                    className="text-xs text-primary hover:underline"
-                  >
-                    {showAllValidationChecks ? 'Show less' : `+${validationChecks.length - 2} more`}
-                  </button>
-                )}
-                <span className="ml-1 text-sm font-medium text-muted-foreground">
-                  {passedChecks}/{validationChecks.length}
-                </span>
+                <span className="text-xs text-green-600 font-medium">{passedChecks} Passed</span>
+                <span className="text-xs text-muted-foreground">·</span>
+                <span className="text-xs text-yellow-600 font-medium">{warnChecks} Warnings</span>
+                <span className="text-xs text-muted-foreground">·</span>
+                <span className="text-xs text-destructive font-medium">{failedChecks} Failed</span>
+                <button
+                  onClick={() => setShowAllValidationChecks(!showAllValidationChecks)}
+                  className="ml-2 text-xs text-primary hover:underline"
+                >
+                  {showAllValidationChecks ? 'Hide details' : 'Show details'}
+                </button>
               </div>
             </div>
+            
+            {/* Expanded Validation Checks */}
+            {showAllValidationChecks && (
+              <div className="absolute left-0 right-0 top-full z-50 mt-2 border-t bg-card shadow-lg">
+                <div className="max-h-[70vh] overflow-auto p-6">
+                  <div className="mx-auto max-w-4xl space-y-6">
+                    {Object.entries(
+                      validationChecks.reduce((acc, check) => {
+                        if (!acc[check.section]) acc[check.section] = [];
+                        acc[check.section].push(check);
+                        return acc;
+                      }, {} as Record<string, ValidationCheck[]>)
+                    ).map(([section, checks]) => (
+                      <div key={section}>
+                        <h4 className="mb-3 text-sm font-semibold text-foreground">{section}</h4>
+                        <div className="space-y-2">
+                          {checks.map((check, idx) => (
+                            <div 
+                              key={idx}
+                              className="flex items-start gap-3 rounded-md border bg-background p-3"
+                            >
+                              <div className="mt-0.5">
+                                {check.status === 'pass' && (
+                                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                                )}
+                                {check.status === 'warn' && (
+                                  <AlertCircle className="h-4 w-4 text-yellow-600" />
+                                )}
+                                {check.status === 'fail' && (
+                                  <XCircle className="h-4 w-4 text-destructive" />
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium">{check.label}</span>
+                                  {check.status === 'pass' && (
+                                    <Badge variant="default" className="text-xs bg-green-600">Pass</Badge>
+                                  )}
+                                  {check.status === 'warn' && (
+                                    <Badge variant="secondary" className="text-xs bg-yellow-100 text-yellow-800">Warn</Badge>
+                                  )}
+                                  {check.status === 'fail' && (
+                                    <Badge variant="destructive" className="text-xs">Fail</Badge>
+                                  )}
+                                </div>
+                                <p className="mt-0.5 text-xs text-muted-foreground">{check.helper}</p>
+                                {check.reason && (
+                                  <p className="mt-1 text-xs text-destructive">{check.reason}</p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -105,6 +105,18 @@ export interface WHTRequest {
     shopeeInvoice?: ExtractedShopeeInvoice;
   };
 
+  // Compliance fields
+  eligibility?: {
+    isEligible: boolean;
+    reason?: string;
+  };
+  duplicate?: {
+    isDuplicate: boolean;
+  };
+  exemptionPeriod?: {
+    isInExemption: boolean;
+  };
+
   // Audit log
   auditLog: AuditLogEntry[];
 }
