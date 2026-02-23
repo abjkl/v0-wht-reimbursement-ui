@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useStore } from '@/lib/store';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, ZoomIn, ZoomOut, Download, ExternalLink, Printer } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
@@ -29,27 +28,29 @@ export default function AttachmentsPage() {
       name: 'WHT Slip',
       filename: `WHT_Slip_${request.id}.pdf`,
       url: request.whtSlipUrl,
-      uploaded: request.docsComplete.whtSlip
+      uploaded: request.docsComplete.whtSlip,
+      zoom: zoom1,
+      setZoom: setZoom1
     },
     {
       id: 'tax-invoice',
       name: 'Tax Invoice',
       filename: `Tax_Invoice_${request.id}.pdf`,
       url: request.taxInvoiceUrl,
-      uploaded: request.docsComplete.taxInvoice
+      uploaded: request.docsComplete.taxInvoice,
+      zoom: zoom2,
+      setZoom: setZoom2
     },
     {
       id: 'shopee-invoice',
       name: 'Shopee Invoice',
       filename: `Shopee_Invoice_${request.id}.pdf`,
       url: request.invoiceUrl,
-      uploaded: request.docsComplete.invoice
+      uploaded: request.docsComplete.invoice,
+      zoom: zoom3,
+      setZoom: setZoom3
     }
   ];
-
-  const doc1 = documents[0]; // WHT Slip
-  const doc2 = documents[1]; // Tax Invoice
-  const doc3 = documents[2]; // Shopee Invoice
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -93,169 +94,74 @@ export default function AttachmentsPage() {
         </div>
       </div>
 
-      {/* Main Content - Three Document Viewers */}
+      {/* Main Content - 3 Documents Side by Side */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Viewer 1 - WHT Slip */}
-        <div className="flex flex-1 flex-col border-r">
-          <div className="flex items-center justify-between border-b bg-card px-4 py-3">
-            <div className="text-sm font-medium">{doc1.filename}</div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setZoom1(Math.max(50, zoom1 - 10))}
-              >
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <span className="text-sm text-muted-foreground">{zoom1}%</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setZoom1(Math.min(200, zoom1 + 10))}
-              >
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Printer className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          <div className="flex-1 overflow-auto bg-muted/30 p-6">
-            {doc1.uploaded ? (
-              <Card className="mx-auto p-8" style={{ width: `${zoom1}%` }}>
-                <div className="space-y-4 text-sm">
-                  <div className="text-center text-lg font-bold">{doc1.name}</div>
-                  <div className="text-center text-muted-foreground">
-                    {doc1.filename}
-                  </div>
-                  <div className="rounded border bg-muted/50 p-4 text-center text-muted-foreground">
-                    Document preview placeholder
-                    <br />
-                    <span className="text-xs">In production, PDF would be displayed here</span>
-                  </div>
-                </div>
-              </Card>
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Document not uploaded
+        {documents.map((doc, index) => (
+          <div key={doc.id} className={`flex flex-1 flex-col ${index < 2 ? 'border-r' : ''}`}>
+            {/* Document Header */}
+            <div className="flex items-center justify-between border-b bg-card px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">{doc.name}</span>
+                {doc.uploaded && (
+                  <div className="h-2 w-2 rounded-full bg-green-600" />
+                )}
               </div>
-            )}
-          </div>
-        </div>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => doc.setZoom(Math.max(50, doc.zoom - 10))}
+                >
+                  <ZoomOut className="h-3.5 w-3.5" />
+                </Button>
+                <span className="min-w-[50px] text-center text-xs text-muted-foreground">
+                  {doc.zoom}%
+                </span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => doc.setZoom(Math.min(200, doc.zoom + 10))}
+                >
+                  <ZoomIn className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Printer className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Download className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
 
-        {/* Viewer 2 - Tax Invoice */}
-        <div className="flex flex-1 flex-col border-r">
-          <div className="flex items-center justify-between border-b bg-card px-4 py-3">
-            <div className="text-sm font-medium">{doc2.filename}</div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setZoom2(Math.max(50, zoom2 - 10))}
-              >
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <span className="text-sm text-muted-foreground">{zoom2}%</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setZoom2(Math.min(200, zoom2 + 10))}
-              >
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Printer className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Download className="h-4 w-4" />
-              </Button>
+            {/* Document Viewer */}
+            <div className="flex-1 overflow-auto bg-muted/30 p-4">
+              {doc.uploaded ? (
+                <Card className="mx-auto p-6" style={{ width: `${doc.zoom}%` }}>
+                  <div className="space-y-4 text-sm">
+                    <div className="text-center text-base font-bold">{doc.name}</div>
+                    <div className="text-center text-xs text-muted-foreground">
+                      {doc.filename}
+                    </div>
+                    <div className="rounded border bg-muted/50 p-8 text-center text-muted-foreground">
+                      Document preview placeholder
+                      <br />
+                      <span className="text-xs">In production, PDF would be displayed here</span>
+                    </div>
+                  </div>
+                </Card>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+                  Document not uploaded
+                </div>
+              )}
             </div>
           </div>
-          <div className="flex-1 overflow-auto bg-muted/30 p-6">
-            {doc2.uploaded ? (
-              <Card className="mx-auto p-8" style={{ width: `${zoom2}%` }}>
-                <div className="space-y-4 text-sm">
-                  <div className="text-center text-lg font-bold">{doc2.name}</div>
-                  <div className="text-center text-muted-foreground">
-                    {doc2.filename}
-                  </div>
-                  <div className="rounded border bg-muted/50 p-4 text-center text-muted-foreground">
-                    Document preview placeholder
-                    <br />
-                    <span className="text-xs">In production, PDF would be displayed here</span>
-                  </div>
-                </div>
-              </Card>
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Document not uploaded
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Viewer 3 - Shopee Invoice */}
-        <div className="flex flex-1 flex-col">
-          <div className="flex items-center justify-between border-b bg-card px-4 py-3">
-            <div className="text-sm font-medium">{doc3.filename}</div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setZoom3(Math.max(50, zoom3 - 10))}
-              >
-                <ZoomOut className="h-4 w-4" />
-              </Button>
-              <span className="text-sm text-muted-foreground">{zoom3}%</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setZoom3(Math.min(200, zoom3 + 10))}
-              >
-                <ZoomIn className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Printer className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
-                <Download className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          <div className="flex-1 overflow-auto bg-muted/30 p-6">
-            {doc3.uploaded ? (
-              <Card className="mx-auto p-8" style={{ width: `${zoom3}%` }}>
-                <div className="space-y-4 text-sm">
-                  <div className="text-center text-lg font-bold">{doc3.name}</div>
-                  <div className="text-center text-muted-foreground">
-                    {doc3.filename}
-                  </div>
-                  <div className="rounded border bg-muted/50 p-4 text-center text-muted-foreground">
-                    Document preview placeholder
-                    <br />
-                    <span className="text-xs">In production, PDF would be displayed here</span>
-                  </div>
-                </div>
-              </Card>
-            ) : (
-              <div className="flex h-full items-center justify-center text-muted-foreground">
-                Document not uploaded
-              </div>
-            )}
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
