@@ -170,7 +170,6 @@ export function RequestsTable({ requests }: RequestsTableProps) {
           </TableBody>
         </Table>
       </div>
-      </Table>
     </div>
   );
 }
