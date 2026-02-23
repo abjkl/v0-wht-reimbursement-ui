@@ -177,7 +177,11 @@ export default function RequestDetailPage() {
             </Badge>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => router.push(`/wht-requests/${request.id}/attachments`)}
+            >
               Attachments
             </Button>
             <Button variant="outline" size="sm">
