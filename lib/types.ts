@@ -60,7 +60,8 @@ export interface WHTRequest {
   // Common fields
   timestamp: string;
   requestorEmail: string;
-  companyName: string;
+  sellerCompanyName: string; // From Google Form "Nama Perusahaan"
+  syncedCompanyName?: string; // Optional, from downstream sync
   invoiceNumber: string;
   invoiceUrl?: string;
   taxInvoiceUrl?: string;

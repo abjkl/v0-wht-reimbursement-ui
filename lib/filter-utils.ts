@@ -72,7 +72,8 @@ export function filterRequests(
       const searchFields = [
         req.id,
         req.requestorEmail,
-        req.companyName,
+        req.sellerCompanyName,
+        req.syncedCompanyName,
         req.invoiceNumber,
         req.shopId,
         req.userId,

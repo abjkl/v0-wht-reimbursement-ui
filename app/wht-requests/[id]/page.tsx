@@ -246,8 +246,15 @@ export default function RequestDetailPage() {
                   <p className="text-sm">{request.sellerType}</p>
                 </div>
                 <div className="col-span-2">
-                  <p className="text-sm font-medium text-foreground">Company Name</p>
-                  <p className="text-sm">{request.companyName}</p>
+                  <p className="text-sm font-medium text-foreground">Nama Perusahaan</p>
+                  <p className="text-sm">
+                    {request.sellerCompanyName || request.syncedCompanyName || '—'}
+                    {!request.sellerCompanyName && request.syncedCompanyName && (
+                      <Badge variant="secondary" className="ml-2 text-[10px]">
+                        synced
+                      </Badge>
+                    )}
+                  </p>
                 </div>
                 <div className="col-span-2">
                   <p className="text-sm font-medium text-foreground">

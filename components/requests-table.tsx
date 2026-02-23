@@ -71,7 +71,7 @@ export function RequestsTable({ requests }: RequestsTableProps) {
               <TableHead className="w-[130px]">Submission Date</TableHead>
               <TableHead className="w-[200px]">Email</TableHead>
               <TableHead className="w-[160px]">Username Toko Shopee</TableHead>
-              <TableHead className="w-[180px]">Company Name</TableHead>
+              <TableHead className="w-[180px]">Nama Perusahaan</TableHead>
               <TableHead className="w-[140px]">Invoice Number</TableHead>
               <TableHead className="w-[140px] text-right">Requested Amount (IDR)</TableHead>
               <TableHead className="w-[80px]">Docs</TableHead>
@@ -106,7 +106,14 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                   <TableCell className="text-sm">{formatDate(req.submissionDate)}</TableCell>
                   <TableCell className="text-sm">{req.requestorEmail}</TableCell>
                   <TableCell className="text-sm">{req.usernameShopee || req.merchantName || '—'}</TableCell>
-                  <TableCell className="text-sm">{req.companyName}</TableCell>
+                  <TableCell className="text-sm">
+                    {req.sellerCompanyName || req.syncedCompanyName || '—'}
+                    {!req.sellerCompanyName && req.syncedCompanyName && (
+                      <Badge variant="secondary" className="ml-2 text-[10px]">
+                        synced
+                      </Badge>
+                    )}
+                  </TableCell>
                   <TableCell className="font-mono text-sm">{req.invoiceNumber}</TableCell>
                   <TableCell className="text-right text-sm">
                     {formatCurrency(req.requestedReimbursementAmount)}
