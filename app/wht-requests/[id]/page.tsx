@@ -164,46 +164,34 @@ export default function RequestDetailPage() {
         </div>
       </div>
 
-      {/* Progress Stepper */}
+      {/* AI Review Suggestion Bar */}
       <div className="border-b bg-card px-6 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
-                1
-              </div>
-              <span className="text-sm font-medium">Review Documents</span>
+              <span className="text-sm text-muted-foreground">AI Suggestion:</span>
+              <Badge 
+                variant={
+                  request.aiSuggestion === 'Approve' 
+                    ? 'default' 
+                    : request.aiSuggestion === 'Reject' 
+                    ? 'destructive' 
+                    : 'secondary'
+                }
+                className="text-sm font-medium"
+              >
+                {request.aiSuggestion}
+              </Badge>
             </div>
-            <div className="flex items-center gap-3">
-              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                request.status === 'Approved' || request.status === 'Rejected' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-muted text-muted-foreground'
-              }`}>
-                2
-              </div>
-              <span className={`text-sm ${
-                request.status === 'Approved' || request.status === 'Rejected'
-                  ? 'font-medium text-foreground'
-                  : 'text-muted-foreground'
-              }`}>
-                Review Decision
-              </span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Confidence:</span>
+              <span className="text-sm font-semibold">{Math.round(request.aiConfidence * 100)}%</span>
+              <Progress value={request.aiConfidence * 100} className="h-2 w-32" />
             </div>
-            <div className="flex items-center gap-3">
-              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                request.injectionStatus === 'Done'
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground'
-              }`}>
-                3
-              </div>
-              <span className={`text-sm ${
-                request.injectionStatus === 'Done'
-                  ? 'font-medium text-foreground'
-                  : 'text-muted-foreground'
-              }`}>
-                Process Reimbursement
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Documents:</span>
+              <span className="text-sm font-medium">
+                {Object.values(request.docsComplete).filter(Boolean).length}/3
               </span>
             </div>
           </div>
