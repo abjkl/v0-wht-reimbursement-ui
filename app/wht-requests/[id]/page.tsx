@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useStore } from '@/lib/store';
 import { DocumentViewer } from '@/components/document-viewer';
 import { DocumentContextPanel } from '@/components/document-context-panel';
-import { AIReviewPanel } from '@/components/ai-review-panel';
 import { AuditLog } from '@/components/audit-log';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -520,9 +519,6 @@ export default function RequestDetailPage() {
         <div className="flex-1 space-y-4 overflow-auto bg-background p-6 pb-32">
           {/* Document Context Panel - Changes based on active tab */}
           <DocumentContextPanel request={request} activeTab={activeDocTab} />
-
-          {/* AI Review */}
-          <AIReviewPanel request={request} />
 
           {/* Audit Log */}
           <AuditLog entries={request.auditLog} />
