@@ -142,13 +142,12 @@ export default function RequestDetailPage() {
       </div>
 
       {/* Header */}
-      <div className="border-b bg-background px-6 py-4">
+      <div className="border-b bg-card px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-semibold">WHT Request</h1>
-            <span className="text-muted-foreground">{'◀'}</span>
             <span className="font-medium">{request.id}</span>
-            <Badge variant={getStatusBadgeVariant(request.status)} className="text-xs">
+            <Badge variant="secondary" className="text-xs">
               {request.status}
             </Badge>
           </div>
@@ -163,16 +162,62 @@ export default function RequestDetailPage() {
         </div>
       </div>
 
+      {/* Progress Stepper */}
+      <div className="border-b bg-card px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
+                1
+              </div>
+              <span className="text-sm font-medium">Review Documents</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
+                request.status === 'Approved' || request.status === 'Rejected' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-muted text-muted-foreground'
+              }`}>
+                2
+              </div>
+              <span className={`text-sm ${
+                request.status === 'Approved' || request.status === 'Rejected'
+                  ? 'font-medium text-foreground'
+                  : 'text-muted-foreground'
+              }`}>
+                Review Decision
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
+                request.injectionStatus === 'Done'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground'
+              }`}>
+                3
+              </div>
+              <span className={`text-sm ${
+                request.injectionStatus === 'Done'
+                  ? 'font-medium text-foreground'
+                  : 'text-muted-foreground'
+              }`}>
+                Process Reimbursement
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden bg-background">
         {/* Left Panel - Request Details */}
-        <div className="w-1/2 space-y-6 overflow-auto border-r p-6 pb-32">
+        <div className="w-1/2 space-y-4 overflow-auto border-r bg-background p-6 pb-32">
           {/* Request ID Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold">{request.id}</CardTitle>
+          <Card className="shadow-sm">
+            <CardHeader className="border-b bg-muted/30 pb-3">
+              <CardTitle className="text-base font-semibold">{request.id}</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                 <div>
                   <p className="text-sm font-medium text-foreground">Request ID</p>
@@ -224,8 +269,8 @@ export default function RequestDetailPage() {
 
           {/* Additional Details */}
           {(request.shopId || request.merchantId || request.userId) && (
-            <Card>
-              <CardContent className="space-y-4 pt-6">
+            <Card className="shadow-sm">
+              <CardContent className="space-y-4 py-6">
                 <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                   {request.shopId && (
                     <div>
