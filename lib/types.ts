@@ -1,0 +1,87 @@
+export type Status = "Submitted" | "Pending Review" | "Approved" | "Rejected";
+
+export type TransactionType =
+  | "MP Platform"
+  | "Food Platform Invoice"
+  | "SVS Prepaid Invoice"
+  | "AMS PPS"
+  | "AMS PPP"
+  | "FBS";
+
+export type SellerType = "Mall" | "Non-mall" | "Merchant";
+
+export type InjectionStatus = "Done" | "Not Started" | "Failed";
+
+export type AISuggestion = "Approve" | "Reject" | "Pending Review";
+
+export interface WHTRequest {
+  // System fields
+  id: string;
+  status: Status;
+  transactionType: TransactionType;
+  sellerType: SellerType;
+  aiSuggestion: AISuggestion;
+  aiConfidence: number;
+
+  // Common fields
+  timestamp: string;
+  requestorEmail: string;
+  companyName: string;
+  invoiceNumber: string;
+  invoiceUrl?: string;
+  taxInvoiceUrl?: string;
+  whtSlipUrl?: string;
+  requestedReimbursementAmount: number;
+  submissionDate: string;
+  approvalStatusYN?: "Y" | "N";
+  approverName?: string;
+  approvalDate?: string;
+  notes?: string;
+  injectionStatus: InjectionStatus;
+  injectionDate?: string;
+
+  // MP-specific
+  usernameShopee?: string;
+  shopId?: string;
+  userId?: string;
+
+  // Food-specific
+  merchantName?: string;
+  merchantId?: string;
+  storeId?: string;
+  settleTo?: string;
+  midSid?: string;
+
+  // Document completeness
+  docsComplete: {
+    invoice: boolean;
+    taxInvoice: boolean;
+    whtSlip: boolean;
+  };
+
+  // Audit log
+  auditLog: AuditLogEntry[];
+}
+
+export interface AuditLogEntry {
+  timestamp: string;
+  actor: string;
+  action: string;
+  details?: string;
+}
+
+export interface FilterState {
+  status: Status | "All";
+  transactionType: TransactionType | "All";
+  sellerType: SellerType | "All";
+  injectionStatus: InjectionStatus | "All";
+  approver: "All" | "Empty" | "Me" | string;
+  dateRange: {
+    start?: string;
+    end?: string;
+  };
+  search: string;
+  missingDocs: "All" | "Missing WHT Slip" | "Missing Tax Invoice" | "Missing Shopee Invoice" | "Complete";
+  amountRange: "All" | "<= 1000000" | "1000001-10000000" | "> 10000000";
+  sla: "All" | "> 3 days";
+}

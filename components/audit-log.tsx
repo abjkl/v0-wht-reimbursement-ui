@@ -1,0 +1,41 @@
+'use client';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { formatDate } from '@/lib/filter-utils';
+import type { AuditLogEntry } from '@/lib/types';
+
+interface AuditLogProps {
+  entries: AuditLogEntry[];
+}
+
+export function AuditLog({ entries }: AuditLogProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-base">Audit Log</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {entries.map((entry, idx) => (
+            <div key={idx}>
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm font-medium">{entry.action}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(entry.timestamp).toLocaleString('id-ID')}
+                  </p>
+                </div>
+                <p className="text-xs text-muted-foreground">{entry.actor}</p>
+                {entry.details && (
+                  <p className="text-xs text-muted-foreground italic">{entry.details}</p>
+                )}
+              </div>
+              {idx < entries.length - 1 && <Separator className="mt-4" />}
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
