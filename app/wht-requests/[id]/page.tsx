@@ -460,16 +460,42 @@ export default function RequestDetailPage() {
         
         {/* Expanded Validation Checks */}
         {showAllValidationChecks && (
-          <div className="px-6 py-4 border-t">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold">Validation Check Details</h3>
-              <button
-                onClick={() => setShowAllValidationChecks(false)}
-                className="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Hide details
-              </button>
+          <div className="px-6 py-3 border-t bg-muted/20">
+            <div className="max-h-[280px] overflow-auto">
+              <div className="grid grid-cols-3 gap-4">
+                {Object.entries(
+                  validationChecks.reduce((acc, check) => {
+                    if (!acc[check.section]) acc[check.section] = [];
+                    acc[check.section].push(check);
+                    return acc;
+                  }, {} as Record<string, ValidationCheck[]>)
+                ).map(([section, checks]) => (
+                  <div key={section} className="space-y-1.5">
+                    <h4 className="text-xs font-semibold text-foreground mb-1.5">{section}</h4>
+                    {checks.map((check, idx) => (
+                      <div 
+                        key={idx}
+                        className="flex items-center gap-1.5 text-[11px]"
+                      >
+                        {check.status === 'pass' && (
+                          <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0" />
+                        )}
+                        {check.status === 'warn' && (
+                          <AlertCircle className="h-3 w-3 text-yellow-600 flex-shrink-0" />
+                        )}
+                        {check.status === 'fail' && (
+                          <XCircle className="h-3 w-3 text-destructive flex-shrink-0" />
+                        )}
+                        <span className="font-medium truncate" title={check.label}>{check.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
+          </div>
+        )}
+      </div>
             <div className="max-h-[400px] overflow-auto">
               <div className="mx-auto max-w-6xl">
                       <div className="grid grid-cols-2 gap-6">
