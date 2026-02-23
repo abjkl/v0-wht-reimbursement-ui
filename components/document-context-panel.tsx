@@ -109,11 +109,7 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
     
     return (
       <div className="space-y-6">
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-            SLIP SUMMARY
-          </h3>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
             <EditableField
               label="WHT Slip Number (Nomor Bukti Potong)"
               value={wht?.slipNumber}
@@ -135,15 +131,10 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               onSave={handleFieldSave('whtRate')}
             />
           </div>
-        </div>
 
         <Separator />
 
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-            PARTIES
-          </h3>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
             <EditableField
               label="Taxpayer NPWP (Shopee)"
               value={wht?.taxpayerNpwp}
@@ -165,15 +156,10 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               onSave={handleFieldSave('collectorName')}
             />
           </div>
-        </div>
 
         <Separator />
 
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-            TAX DETAIL
-          </h3>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
             <EditableField
               label="Tax Base / DPP"
               value={wht?.taxBase}
@@ -221,15 +207,10 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               onSave={handleFieldSave('taxInvoiceDate')}
             />
           </div>
-        </div>
 
         <Separator />
 
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-            ISSUER (SELLER)
-          </h3>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
             <EditableField
               label="Issuer NPWP"
               value={tax?.issuerNpwp}
@@ -241,15 +222,10 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               onSave={handleFieldSave('issuerName')}
             />
           </div>
-        </div>
 
         <Separator />
 
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-            BUYER (SHOPEE)
-          </h3>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
             <EditableField
               label="Buyer NPWP"
               value={tax?.buyerNpwp}
@@ -302,11 +278,7 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
     
     return (
       <div className="space-y-6">
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-            INVOICE INFO
-          </h3>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
             <EditableField
               label="Invoice Number (OCR)"
               value={invoice?.invoiceNumberOcr}
@@ -328,21 +300,16 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               onSave={handleFieldSave('issuerNpwp')}
             />
           </div>
-        </div>
 
         <Separator />
 
-        <div>
-          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-            AMOUNTS
-          </h3>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-            <EditableField
-              label="Amount Before Tax"
-              value={invoice?.amountBeforeTax}
-              isMoney
-              onSave={handleFieldSave('amountBeforeTax')}
-            />
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+          <EditableField
+            label="Amount Before Tax"
+            value={invoice?.amountBeforeTax}
+            isMoney
+            onSave={handleFieldSave('amountBeforeTax')}
+          />
             <EditableField
               label="Total Amount"
               value={invoice?.totalAmount}
@@ -365,16 +332,11 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
         {invoice?.description && (
           <>
             <Separator />
-            <div>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-                DESCRIPTION
-              </h3>
-              <EditableField
-                label="Invoice Description"
-                value={invoice.description}
-                onSave={handleFieldSave('description')}
-              />
-            </div>
+            <EditableField
+              label="Invoice Description"
+              value={invoice.description}
+              onSave={handleFieldSave('description')}
+            />
           </>
         )}
       </div>
