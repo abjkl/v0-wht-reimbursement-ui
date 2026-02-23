@@ -496,64 +496,6 @@ export default function RequestDetailPage() {
           </div>
         )}
       </div>
-            <div className="max-h-[400px] overflow-auto">
-              <div className="mx-auto max-w-6xl">
-                      <div className="grid grid-cols-2 gap-6">
-                        {Object.entries(
-                          validationChecks.reduce((acc, check) => {
-                            if (!acc[check.section]) acc[check.section] = [];
-                            acc[check.section].push(check);
-                            return acc;
-                          }, {} as Record<string, ValidationCheck[]>)
-                        ).map(([section, checks]) => (
-                          <div key={section}>
-                            <h4 className="mb-3 text-sm font-semibold text-foreground">{section}</h4>
-                            <div className="space-y-2">
-                              {checks.map((check, idx) => (
-                                <div 
-                                  key={idx}
-                                  className="flex items-start gap-2 rounded-md border bg-background p-2.5"
-                                >
-                                  <div className="mt-0.5">
-                                    {check.status === 'pass' && (
-                                      <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-                                    )}
-                                    {check.status === 'warn' && (
-                                      <AlertCircle className="h-3.5 w-3.5 text-yellow-600" />
-                                    )}
-                                    {check.status === 'fail' && (
-                                      <XCircle className="h-3.5 w-3.5 text-destructive" />
-                                    )}
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-xs font-medium">{check.label}</span>
-                                      {check.status === 'pass' && (
-                                        <Badge variant="default" className="text-[10px] h-4 bg-green-600">Pass</Badge>
-                                      )}
-                                      {check.status === 'warn' && (
-                                        <Badge variant="secondary" className="text-[10px] h-4 bg-yellow-100 text-yellow-800">Warn</Badge>
-                                      )}
-                                      {check.status === 'fail' && (
-                                        <Badge variant="destructive" className="text-[10px] h-4">Fail</Badge>
-                                      )}
-                                    </div>
-                                    <p className="mt-0.5 text-[11px] leading-tight text-muted-foreground">{check.helper}</p>
-                                    {check.reason && (
-                                      <p className="mt-0.5 text-[11px] leading-tight text-destructive">{check.reason}</p>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden bg-background">
