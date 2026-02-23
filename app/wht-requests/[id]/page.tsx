@@ -390,8 +390,8 @@ export default function RequestDetailPage() {
       </div>
 
       {/* AI Review Suggestion Bar */}
-      <div className="relative border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="border-b bg-card">
+        <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">AI Suggestion:</span>
@@ -435,18 +435,23 @@ export default function RequestDetailPage() {
                 </button>
               </div>
             </div>
-            
-            {/* Expanded Validation Checks */}
-            {showAllValidationChecks && (
-              <>
-                {/* Backdrop */}
-                <div 
-                  className="fixed inset-0 z-40 bg-black/20"
+          </div>
+        </div>
+        
+        {/* Expanded Validation Checks */}
+        {showAllValidationChecks && (
+          <div className="border-b bg-card">
+            <div className="px-6 py-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-semibold">Validation Check Details</h3>
+                <button
                   onClick={() => setShowAllValidationChecks(false)}
-                />
-                {/* Dropdown */}
-                <div className="absolute left-0 right-0 top-full z-50 mt-2 border-t bg-card shadow-xl">
-                  <div className="max-h-[70vh] overflow-auto p-6">
+                  className="text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Hide details
+                </button>
+              </div>
+              <div className="max-h-[400px] overflow-auto">
                     <div className="mx-auto max-w-6xl">
                       <div className="grid grid-cols-2 gap-6">
                         {Object.entries(
@@ -502,10 +507,10 @@ export default function RequestDetailPage() {
                     </div>
                   </div>
                 </div>
-              </>
-            )}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Main Content */}
