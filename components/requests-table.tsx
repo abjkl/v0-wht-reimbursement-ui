@@ -90,9 +90,17 @@ export function RequestsTable({ requests }: RequestsTableProps) {
             </TableRow>
           ) : (
             requests.map((req) => (
-              <TableRow key={req.id} className="cursor-pointer">
+              <TableRow 
+                key={req.id} 
+                className="cursor-pointer hover:bg-muted/50 transition-colors"
+                onClick={() => window.location.href = `/wht-requests/${req.id}`}
+              >
                 <TableCell className="font-mono text-xs">
-                  <Link href={`/wht-requests/${req.id}`} className="text-primary hover:underline">
+                  <Link 
+                    href={`/wht-requests/${req.id}`} 
+                    className="font-medium text-primary hover:underline"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     {req.id}
                   </Link>
                 </TableCell>
