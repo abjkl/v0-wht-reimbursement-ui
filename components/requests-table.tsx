@@ -59,124 +59,117 @@ export function RequestsTable({ requests }: RequestsTableProps) {
     );
 
   return (
-    <div className="rounded-lg border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="w-[120px]">Request ID</TableHead>
-            <TableHead className="w-[110px]">Submission</TableHead>
-            <TableHead className="w-[200px]">Requestor</TableHead>
-            <TableHead className="w-[140px]">Type</TableHead>
-            <TableHead className="w-[100px]">Party</TableHead>
-            <TableHead className="min-w-[180px]">Company</TableHead>
-            <TableHead className="min-w-[150px]">Name/Shop</TableHead>
-            <TableHead className="w-[140px]">Invoice #</TableHead>
-            <TableHead className="w-[140px] text-right">Amount</TableHead>
-            <TableHead className="w-[110px]">Status</TableHead>
-            <TableHead className="w-[140px]">AI</TableHead>
-            <TableHead className="w-[180px]">Approver</TableHead>
-            <TableHead className="w-[110px]">Approved</TableHead>
-            <TableHead className="w-[110px]">Injection</TableHead>
-            <TableHead className="w-[110px]">Injected</TableHead>
-            <TableHead className="w-[80px]">Docs</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {requests.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={16} className="h-32 text-center text-muted-foreground">
-                No requests found
-              </TableCell>
+    <div className="overflow-hidden rounded-lg border bg-card">
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-[50px]">
+                <input type="checkbox" className="rounded border" />
+              </TableHead>
+              <TableHead className="w-[140px]">Request ID</TableHead>
+              <TableHead className="w-[110px]">Submission Date</TableHead>
+              <TableHead className="w-[180px]">Requestor Email</TableHead>
+              <TableHead className="w-[140px]">Transaction Type</TableHead>
+              <TableHead className="w-[140px]">Invoice Number</TableHead>
+              <TableHead className="w-[120px] text-right">Amount</TableHead>
+              <TableHead className="w-[120px]">Status</TableHead>
+              <TableHead className="w-[140px]">AI Suggestion</TableHead>
+              <TableHead className="w-[100px]">Injection</TableHead>
+              <TableHead className="w-[80px]">Docs</TableHead>
+              <TableHead className="w-[120px]">Action</TableHead>
             </TableRow>
-          ) : (
-            requests.map((req) => (
-              <TableRow 
-                key={req.id} 
-                className="cursor-pointer hover:bg-muted/50 transition-colors"
-                onClick={() => window.location.href = `/wht-requests/${req.id}`}
-              >
-                <TableCell className="font-mono text-xs">
-                  <Link 
-                    href={`/wht-requests/${req.id}`} 
-                    className="font-medium text-primary hover:underline"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    {req.id}
-                  </Link>
-                </TableCell>
-                <TableCell className="text-xs">{formatDate(req.submissionDate)}</TableCell>
-                <TableCell className="text-xs">{req.requestorEmail}</TableCell>
-                <TableCell className="text-xs">{req.transactionType}</TableCell>
-                <TableCell className="text-xs">{req.sellerType}</TableCell>
-                <TableCell className="text-xs">{req.companyName}</TableCell>
-                <TableCell className="text-xs">
-                  {req.usernameShopee || req.merchantName || '—'}
-                </TableCell>
-                <TableCell className="font-mono text-xs">{req.invoiceNumber}</TableCell>
-                <TableCell className="text-right text-xs">
-                  {formatCurrency(req.requestedReimbursementAmount)}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={getStatusBadgeVariant(req.status)} className="text-xs">
-                    {req.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={getAISuggestionBadgeVariant(req.aiSuggestion)} className="text-xs">
-                      {req.aiSuggestion === 'Approve' ? 'Approve' : req.aiSuggestion === 'Reject' ? 'Reject' : 'Review'}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {Math.round(req.aiConfidence * 100)}%
-                    </span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-xs">{req.approverName || '—'}</TableCell>
-                <TableCell className="text-xs">
-                  {req.approvalDate ? formatDate(req.approvalDate) : '—'}
-                </TableCell>
-                <TableCell>
-                  <Badge variant={getInjectionBadgeVariant(req.injectionStatus)} className="text-xs">
-                    {req.injectionStatus}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-xs">
-                  {req.injectionDate ? formatDate(req.injectionDate) : '—'}
-                </TableCell>
-                <TableCell>
-                  <TooltipProvider>
-                    <div className="flex items-center gap-1">
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <DocIcon complete={req.docsComplete.whtSlip} />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>WHT Slip {req.docsComplete.whtSlip ? '✓' : '✗'}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <DocIcon complete={req.docsComplete.taxInvoice} />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Tax Invoice {req.docsComplete.taxInvoice ? '✓' : '✗'}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <DocIcon complete={req.docsComplete.invoice} />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Invoice {req.docsComplete.invoice ? '✓' : '✗'}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </TooltipProvider>
+          </TableHeader>
+          <TableBody>
+            {requests.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={12} className="h-32 text-center text-muted-foreground">
+                  No requests found
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
+            ) : (
+              requests.map((req) => (
+                <TableRow key={req.id} className="hover:bg-muted/30">
+                  <TableCell>
+                    <input type="checkbox" className="rounded border" />
+                  </TableCell>
+                  <TableCell className="font-mono text-sm">
+                    <Link href={`/wht-requests/${req.id}`} className="text-primary hover:underline">
+                      {req.id}
+                    </Link>
+                  </TableCell>
+                  <TableCell className="text-sm">{formatDate(req.submissionDate)}</TableCell>
+                  <TableCell className="text-sm">{req.requestorEmail}</TableCell>
+                  <TableCell className="text-sm">{req.transactionType}</TableCell>
+                  <TableCell className="font-mono text-sm">{req.invoiceNumber}</TableCell>
+                  <TableCell className="text-right text-sm">
+                    {formatCurrency(req.requestedReimbursementAmount)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getStatusBadgeVariant(req.status)} className="text-xs">
+                      {req.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Badge variant={getAISuggestionBadgeVariant(req.aiSuggestion)} className="text-xs">
+                        {req.aiSuggestion === 'Approve' ? 'Approve' : req.aiSuggestion === 'Reject' ? 'Reject' : 'Review'}
+                      </Badge>
+                      {req.aiConfidence > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          {Math.round(req.aiConfidence * 100)}%
+                        </span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getInjectionBadgeVariant(req.injectionStatus)} className="text-xs">
+                      {req.injectionStatus}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <TooltipProvider>
+                      <div className="flex items-center gap-1">
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <DocIcon complete={req.docsComplete.whtSlip} />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>WHT Slip {req.docsComplete.whtSlip ? '✓' : '✗'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <DocIcon complete={req.docsComplete.taxInvoice} />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Tax Invoice {req.docsComplete.taxInvoice ? '✓' : '✗'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <DocIcon complete={req.docsComplete.invoice} />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Invoice {req.docsComplete.invoice ? '✓' : '✗'}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TooltipProvider>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      <Link href={`/wht-requests/${req.id}`} className="text-sm text-primary hover:underline">
+                        Review
+                      </Link>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
       </Table>
     </div>
   );
