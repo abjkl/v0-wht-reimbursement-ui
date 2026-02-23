@@ -13,7 +13,7 @@ export default function AttachmentsPage() {
   const params = useParams();
   const router = useRouter();
   const { requests } = useStore();
-  const [leftDoc, setLeftDoc] = useState('wht-slip');
+  const leftDoc = 'wht-slip'; // Always fixed to WHT Slip
   const [rightDoc, setRightDoc] = useState('tax-invoice');
   const [leftZoom, setLeftZoom] = useState(100);
   const [rightZoom, setRightZoom] = useState(100);
@@ -103,7 +103,11 @@ export default function AttachmentsPage() {
             {documents.map((doc) => (
               <button
                 key={doc.id}
-                onClick={() => setLeftDoc(doc.id)}
+                onClick={() => {
+                  if (doc.id !== 'wht-slip') {
+                    setRightDoc(doc.id);
+                  }
+                }}
                 className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
                   leftDoc === doc.id || rightDoc === doc.id
                     ? 'bg-primary/10 text-primary'
@@ -125,21 +129,10 @@ export default function AttachmentsPage() {
 
         {/* Document Viewers */}
         <div className="flex flex-1">
-          {/* Left Viewer */}
+          {/* Left Viewer - Fixed to WHT Slip */}
           <div className="flex flex-1 flex-col border-r">
             <div className="flex items-center justify-between border-b bg-card px-4 py-3">
-              <Select value={leftDoc} onValueChange={setLeftDoc}>
-                <SelectTrigger className="w-[300px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {documents.map(doc => (
-                    <SelectItem key={doc.id} value={doc.id}>
-                      {doc.filename}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="text-sm font-medium">{leftDocument?.filename}</div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
@@ -190,7 +183,7 @@ export default function AttachmentsPage() {
             </div>
           </div>
 
-          {/* Right Viewer */}
+          {/* Right Viewer - Tax Invoice or Commercial Invoice */}
           <div className="flex flex-1 flex-col">
             <div className="flex items-center justify-between border-b bg-card px-4 py-3">
               <Select value={rightDoc} onValueChange={setRightDoc}>
@@ -198,7 +191,7 @@ export default function AttachmentsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {documents.map(doc => (
+                  {documents.filter(doc => doc.id !== 'wht-slip').map(doc => (
                     <SelectItem key={doc.id} value={doc.id}>
                       {doc.filename}
                     </SelectItem>
