@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { FileText, FileCheck, FileX } from 'lucide-react';
-import { formatCurrency, formatDate, getDocCompletionCount } from '@/lib/filter-utils';
+import { FileCheck, FileX } from 'lucide-react';
+import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import type { WHTRequest } from '@/lib/types';
 
 interface RequestsTableProps {
