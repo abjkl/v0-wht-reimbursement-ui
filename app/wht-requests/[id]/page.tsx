@@ -440,19 +440,18 @@ export default function RequestDetailPage() {
         
         {/* Expanded Validation Checks */}
         {showAllValidationChecks && (
-          <div className="border-b bg-card">
-            <div className="px-6 py-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold">Validation Check Details</h3>
-                <button
-                  onClick={() => setShowAllValidationChecks(false)}
-                  className="text-xs text-muted-foreground hover:text-foreground"
-                >
-                  Hide details
-                </button>
-              </div>
-              <div className="max-h-[400px] overflow-auto">
-                    <div className="mx-auto max-w-6xl">
+          <div className="px-6 py-4 border-t">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold">Validation Check Details</h3>
+              <button
+                onClick={() => setShowAllValidationChecks(false)}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                Hide details
+              </button>
+            </div>
+            <div className="max-h-[400px] overflow-auto">
+              <div className="mx-auto max-w-6xl">
                       <div className="grid grid-cols-2 gap-6">
                         {Object.entries(
                           validationChecks.reduce((acc, check) => {
@@ -503,9 +502,6 @@ export default function RequestDetailPage() {
                             </div>
                           </div>
                         ))}
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
