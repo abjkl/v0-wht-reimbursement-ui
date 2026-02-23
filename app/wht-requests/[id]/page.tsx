@@ -32,6 +32,7 @@ export default function RequestDetailPage() {
   const [showApproveDialog, setShowApproveDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReasons, setRejectionReasons] = useState<string[]>([]);
+  const [showManualDecision, setShowManualDecision] = useState(false);
 
   const request = requests.find(r => r.id === params.id);
 
@@ -307,40 +308,68 @@ export default function RequestDetailPage() {
       {/* Sticky Bottom Actions */}
       {request.status !== 'Approved' && request.status !== 'Rejected' && (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-lg">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setShowRejectDialog(true)}
-              >
-                <XCircle className="mr-2 h-4 w-4" />
-                Reject
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowApproveDialog(true)}
-              >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Approve
-              </Button>
-            </div>
-            <div className="flex gap-2">
-              {request.aiSuggestion !== 'Pending Review' && (
+          <div className="flex flex-col items-center justify-center gap-3 px-6 py-6">
+            {/* AI Suggestion - Primary Action */}
+            {request.aiSuggestion !== 'Pending Review' && (
+              <div className="flex flex-col items-center gap-2">
                 <Button
+                  size="lg"
                   onClick={handleAcceptAI}
-                  variant={request.aiSuggestion === 'Approve' ? 'default' : 'destructive'}
+                  className={`h-12 px-8 text-base ${
+                    request.aiSuggestion === 'Approve'
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : 'bg-destructive hover:bg-destructive/90'
+                  }`}
+                >
+                  <CheckCircle className="mr-2 h-5 w-5" />
+                  Accept AI Suggestion ({request.aiSuggestion})
+                  <span className="ml-2 text-sm opacity-90">
+                    {Math.round(request.aiConfidence * 100)}%
+                  </span>
+                </Button>
+                <button
+                  onClick={() => setShowManualDecision(!showManualDecision)}
+                  className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                >
+                  Or decide manually {showManualDecision ? '▲' : '▼'}
+                </button>
+              </div>
+            )}
+
+            {/* Manual Decision Options - Collapsible */}
+            {(showManualDecision || request.aiSuggestion === 'Pending Review') && (
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setShowRejectDialog(true)}
+                  className="h-11"
+                >
+                  <XCircle className="mr-2 h-4 w-4" />
+                  Reject
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setShowApproveDialog(true)}
+                  className="h-11"
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Accept AI Suggestion ({request.aiSuggestion})
+                  Approve
                 </Button>
-              )}
-              {nextRequest && (
-                <Button variant="outline" onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}>
-                  Next Request
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              )}
-            </div>
+                {nextRequest && (
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}
+                    className="h-11"
+                  >
+                    Next Request
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
