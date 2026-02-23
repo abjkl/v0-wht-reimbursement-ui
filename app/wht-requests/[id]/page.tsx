@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, CheckCircle, XCircle, ChevronRight } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, ChevronRight, CheckCircle2 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
   Dialog,
@@ -51,6 +51,28 @@ export default function RequestDetailPage() {
       </div>
     );
   }
+
+  // Validation checks
+  const validationChecks = [
+    {
+      label: 'Docs Complete',
+      passed: request.docsComplete.invoice && request.docsComplete.taxInvoice && request.docsComplete.whtSlip,
+    },
+    {
+      label: 'Invoice Valid',
+      passed: !!request.invoiceNumber,
+    },
+    {
+      label: 'Amount Valid',
+      passed: request.requestedReimbursementAmount > 0,
+    },
+    {
+      label: 'Company Info',
+      passed: !!(request.sellerCompanyName || request.syncedCompanyName),
+    }
+  ];
+
+  const passedChecks = validationChecks.filter(c => c.passed).length;
 
   const handleApprove = () => {
     updateRequest(request.id, {
@@ -194,6 +216,27 @@ export default function RequestDetailPage() {
               <span className="text-sm font-medium">
                 {Object.values(request.docsComplete).filter(Boolean).length}/3
               </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Validation Checks:</span>
+              <div className="flex items-center gap-1">
+                {validationChecks.map((check, idx) => (
+                  <div 
+                    key={idx} 
+                    className="group relative flex items-center"
+                    title={check.label}
+                  >
+                    {check.passed ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-destructive" />
+                    )}
+                  </div>
+                ))}
+                <span className="ml-1 text-sm font-medium">
+                  {passedChecks}/{validationChecks.length}
+                </span>
+              </div>
             </div>
           </div>
         </div>
