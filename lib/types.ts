@@ -44,8 +44,12 @@ export interface ExtractedShopeeInvoice {
   invoiceNumberOcr?: string;
   invoiceDate?: string;
   issuerName?: string;
+  issuerNpwp?: string;
   amountBeforeTax?: number;
   totalAmount?: number;
+  currency?: string;
+  lineItemCount?: number;
+  description?: string;
 }
 
 export interface WHTRequest {
