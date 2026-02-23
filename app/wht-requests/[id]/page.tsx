@@ -257,8 +257,13 @@ export default function RequestDetailPage() {
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden bg-background">
-        {/* Left Panel - Request Details */}
-        <div className="w-1/2 space-y-4 overflow-auto border-r bg-background p-6 pb-32">
+        {/* Left Panel - Document Viewer */}
+        <div className="w-1/2 border-r p-6">
+          <DocumentViewer request={request} onTabChange={setActiveDocTab} />
+        </div>
+
+        {/* Right Panel - Parsed Fields & Details */}
+        <div className="flex-1 space-y-4 overflow-auto bg-background p-6 pb-32">
           {/* Document Context Panel - Changes based on active tab */}
           <DocumentContextPanel request={request} activeTab={activeDocTab} />
 
@@ -267,11 +272,6 @@ export default function RequestDetailPage() {
 
           {/* Audit Log */}
           <AuditLog entries={request.auditLog} />
-        </div>
-
-        {/* Right Panel - Document Viewer */}
-        <div className="flex-1 p-6">
-          <DocumentViewer request={request} onTabChange={setActiveDocTab} />
         </div>
       </div>
 

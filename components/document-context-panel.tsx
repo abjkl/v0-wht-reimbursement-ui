@@ -1,8 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Pencil, Check, X } from 'lucide-react';
 import type { WHTRequest } from '@/lib/types';
 import { formatCurrency } from '@/lib/filter-utils';
 
@@ -11,32 +14,83 @@ interface DocumentContextPanelProps {
   activeTab: string;
 }
 
-interface FieldRowProps {
+interface EditableFieldRowProps {
   label: string;
   value: string | number | undefined | null;
-  source: string;
   isMoney?: boolean;
+  onSave?: (newValue: string) => void;
 }
 
-function FieldRow({ label, value, source, isMoney }: FieldRowProps) {
+function EditableFieldRow({ label, value, isMoney, onSave }: EditableFieldRowProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState('');
+
   const displayValue = value 
     ? (isMoney && typeof value === 'number' ? formatCurrency(value) : String(value))
     : '—';
   
   const isEmpty = !value;
 
+  const handleEdit = () => {
+    setEditValue(value ? String(value) : '');
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    onSave?.(editValue);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditValue('');
+  };
+
   return (
-    <div className="flex items-start justify-between py-2">
-      <div className="flex-1">
+    <div className="group flex items-center justify-between gap-3 py-2 hover:bg-muted/30 rounded px-2 -mx-2">
+      <div className="flex-1 min-w-0">
         <p className="text-sm font-medium text-foreground">{label}</p>
-        <p className="text-xs text-muted-foreground mt-0.5">Source: {source}</p>
       </div>
-      <div className="flex flex-col items-end">
-        <p className={`text-sm ${isEmpty ? 'text-muted-foreground' : 'font-mono'}`}>
-          {displayValue}
-        </p>
-        {isEmpty && (
-          <p className="text-xs text-muted-foreground">Not extracted</p>
+      <div className="flex items-center gap-2">
+        {isEditing ? (
+          <>
+            <Input
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              className="h-7 w-40 text-sm"
+              autoFocus
+            />
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0"
+              onClick={handleSave}
+            >
+              <Check className="h-3.5 w-3.5 text-green-600" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0"
+              onClick={handleCancel}
+            >
+              <X className="h-3.5 w-3.5 text-destructive" />
+            </Button>
+          </>
+        ) : (
+          <>
+            <p className={`text-sm ${isEmpty ? 'text-muted-foreground' : 'font-mono'}`}>
+              {displayValue}
+            </p>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              onClick={handleEdit}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+          </>
         )}
       </div>
     </div>
@@ -61,6 +115,11 @@ function SectionHeader({ title }: SectionHeaderProps) {
 export function DocumentContextPanel({ request, activeTab }: DocumentContextPanelProps) {
   const { extracted } = request;
 
+  const handleFieldSave = (fieldPath: string, newValue: string) => {
+    console.log('[v0] Saving field:', fieldPath, newValue);
+    // TODO: Implement actual save logic via API
+  };
+
   // WHT Slip Tab Content
   if (activeTab === 'wht-slip') {
     const whtData = extracted?.whtSlip;
@@ -73,71 +132,71 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
         <CardContent className="pt-4">
           {/* Slip Summary */}
           <SectionHeader title="Slip Summary" />
-          <FieldRow
+          <EditableFieldRow
             label="WHT Slip Number (Nomor Bukti Potong)"
             value={whtData?.slipNumber}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.slipNumber', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Tax Period / Masa Pajak (MM-YYYY)"
             value={whtData?.taxPeriod}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.taxPeriod', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="WHT Code"
             value={whtData?.whtCode}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.whtCode', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="WHT Rate (%)"
             value={whtData?.whtRate}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.whtRate', val)}
           />
 
           {/* Parties */}
           <SectionHeader title="Parties" />
-          <FieldRow
+          <EditableFieldRow
             label="Taxpayer NPWP (Shopee)"
             value={whtData?.taxpayerNpwp}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.taxpayerNpwp', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Taxpayer Name (Shopee)"
             value={whtData?.taxpayerName}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.taxpayerName', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Collector NPWP (Seller/Merchant)"
             value={whtData?.collectorNpwp}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.collectorNpwp', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Collector Name (Seller/Merchant)"
             value={whtData?.collectorName}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.collectorName', val)}
           />
 
           {/* Tax Detail */}
           <SectionHeader title="Tax Detail" />
-          <FieldRow
+          <EditableFieldRow
             label="Tax Base / DPP"
             value={whtData?.taxBase}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.taxBase', val)}
             isMoney
           />
-          <FieldRow
+          <EditableFieldRow
             label="WHT Amount (PPh23)"
             value={whtData?.whtAmount}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.whtAmount', val)}
             isMoney
           />
 
           {/* Invoice Reference */}
           <SectionHeader title="Invoice Reference" />
-          <FieldRow
+          <EditableFieldRow
             label="Referenced Invoice Number (B9)"
             value={whtData?.referencedInvoiceNumber}
-            source="WHT Slip OCR"
+            onSave={(val) => handleFieldSave('whtSlip.referencedInvoiceNumber', val)}
           />
         </CardContent>
       </Card>
@@ -156,61 +215,61 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
         <CardContent className="pt-4">
           {/* Tax Invoice Info */}
           <SectionHeader title="Tax Invoice Info" />
-          <FieldRow
+          <EditableFieldRow
             label="Tax Invoice Number (Nomor Faktur Pajak)"
             value={taxData?.taxInvoiceNumber}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.taxInvoiceNumber', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Tax Invoice Date"
             value={taxData?.taxInvoiceDate}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.taxInvoiceDate', val)}
           />
 
           {/* Issuer (Shopee Entity) */}
           <SectionHeader title="Issuer (Shopee Entity)" />
-          <FieldRow
+          <EditableFieldRow
             label="Issuer NPWP"
             value={taxData?.issuerNpwp}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.issuerNpwp', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Issuer Name"
             value={taxData?.issuerName}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.issuerName', val)}
           />
 
           {/* Buyer (Seller/Merchant) */}
           <SectionHeader title="Buyer (Seller/Merchant)" />
-          <FieldRow
+          <EditableFieldRow
             label="Buyer NPWP"
             value={taxData?.buyerNpwp}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.buyerNpwp', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Buyer Name"
             value={taxData?.buyerName}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.buyerName', val)}
           />
 
           {/* Amounts */}
           <SectionHeader title="Amounts" />
-          <FieldRow
+          <EditableFieldRow
             label="DPP / Tax Base (Harga Jual/Penggantian)"
             value={taxData?.dppTaxBase}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.dppTaxBase', val)}
             isMoney
           />
-          <FieldRow
+          <EditableFieldRow
             label="VAT / PPN"
             value={taxData?.vatAmount}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.vatAmount', val)}
             isMoney
           />
-          <FieldRow
+          <EditableFieldRow
             label="Total Amount"
             value={taxData?.totalAmount}
-            source="Tax Invoice OCR"
+            onSave={(val) => handleFieldSave('taxInvoice.totalAmount', val)}
             isMoney
           />
         </CardContent>
@@ -230,48 +289,48 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
         <CardContent className="pt-4">
           {/* Commercial Invoice Info */}
           <SectionHeader title="Commercial Invoice Info" />
-          <FieldRow
+          <EditableFieldRow
             label="Seller Input Invoice Number"
             value={request.invoiceNumber}
-            source="Seller Input"
+            onSave={(val) => handleFieldSave('invoiceNumber', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="OCR Extracted Invoice Number"
             value={shopeeData?.invoiceNumberOcr}
-            source="Shopee Invoice OCR"
+            onSave={(val) => handleFieldSave('shopeeInvoice.invoiceNumberOcr', val)}
           />
-          <FieldRow
+          <EditableFieldRow
             label="Invoice Date"
             value={shopeeData?.invoiceDate}
-            source="Shopee Invoice OCR"
+            onSave={(val) => handleFieldSave('shopeeInvoice.invoiceDate', val)}
           />
 
           {/* Issuer */}
           <SectionHeader title="Issuer" />
-          <FieldRow
+          <EditableFieldRow
             label="Issuer Name"
             value={shopeeData?.issuerName}
-            source="Shopee Invoice OCR"
+            onSave={(val) => handleFieldSave('shopeeInvoice.issuerName', val)}
           />
 
           {/* Amounts */}
           <SectionHeader title="Amounts" />
-          <FieldRow
+          <EditableFieldRow
             label="Amount Before Tax"
             value={shopeeData?.amountBeforeTax}
-            source="Shopee Invoice OCR"
+            onSave={(val) => handleFieldSave('shopeeInvoice.amountBeforeTax', val)}
             isMoney
           />
-          <FieldRow
+          <EditableFieldRow
             label="Total Amount"
             value={shopeeData?.totalAmount}
-            source="Shopee Invoice OCR"
+            onSave={(val) => handleFieldSave('shopeeInvoice.totalAmount', val)}
             isMoney
           />
-          <FieldRow
+          <EditableFieldRow
             label="Currency"
             value={shopeeData?.currency || 'IDR'}
-            source="Shopee Invoice OCR"
+            onSave={(val) => handleFieldSave('shopeeInvoice.currency', val)}
           />
         </CardContent>
       </Card>
