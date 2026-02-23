@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Pencil, Check, X, RefreshCw } from 'lucide-react';
+import { Pencil, Check, X } from 'lucide-react';
 import type { WHTRequest } from '@/lib/types';
 
 interface DocumentContextPanelProps {
@@ -72,21 +72,9 @@ function EditableField({ label, value, isMoney, onSave }: EditableFieldProps) {
 }
 
 export function DocumentContextPanel({ request, activeTab }: DocumentContextPanelProps) {
-  const [isRerunning, setIsRerunning] = useState(false);
-
   const handleFieldSave = (field: string) => (value: string) => {
     console.log(`[v0] Saving field ${field}:`, value);
     // TODO: API call to update field
-  };
-
-  const handleRerunAI = async () => {
-    setIsRerunning(true);
-    console.log('[v0] Rerunning AI validation checks...');
-    // TODO: API call to rerun AI validation
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsRerunning(false);
-    console.log('[v0] AI validation completed');
   };
 
   const renderWHTSlipFields = () => {
@@ -324,19 +312,7 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
   return (
     <Card className="shadow-sm">
       <CardHeader className="border-b bg-muted/30 pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold">{getDocumentTitle()}</CardTitle>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={handleRerunAI}
-            disabled={isRerunning}
-            className="gap-2"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isRerunning ? 'animate-spin' : ''}`} />
-            {isRerunning ? '重新运行中...' : '重新运行 AI'}
-          </Button>
-        </div>
+        <CardTitle className="text-base font-semibold">{getDocumentTitle()}</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         {activeTab === 'wht-slip' && renderWHTSlipFields()}

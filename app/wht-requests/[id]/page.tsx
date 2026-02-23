@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, CheckCircle, XCircle, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, ChevronRight, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
   Dialog,
@@ -36,6 +36,7 @@ export default function RequestDetailPage() {
   const [showManualDecision, setShowManualDecision] = useState(false);
   const [activeDocTab, setActiveDocTab] = useState('wht-slip');
   const [showAllValidationChecks, setShowAllValidationChecks] = useState(false);
+  const [isRerunningAI, setIsRerunningAI] = useState(false);
 
   const request = requests.find(r => r.id === params.id);
 
@@ -274,6 +275,16 @@ export default function RequestDetailPage() {
   const warnChecks = validationChecks.filter(c => c.status === 'warn').length;
   const failedChecks = validationChecks.filter(c => c.status === 'fail').length;
 
+  const handleRerunAI = async () => {
+    setIsRerunningAI(true);
+    console.log('[v0] Rerunning AI validation checks...');
+    // TODO: API call to rerun AI validation
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    setIsRerunningAI(false);
+    console.log('[v0] AI validation completed');
+  };
+
   const handleApprove = () => {
     updateRequest(request.id, {
       status: 'Approved',
@@ -407,6 +418,16 @@ export default function RequestDetailPage() {
                 {request.aiSuggestion}
               </Badge>
             </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleRerunAI}
+              disabled={isRerunningAI}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-3.5 w-3.5 ${isRerunningAI ? 'animate-spin' : ''}`} />
+              {isRerunningAI ? '重新运行中...' : '重新运行 AI'}
+            </Button>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Confidence:</span>
               <span className="text-sm font-semibold">{Math.round(request.aiConfidence * 100)}%</span>
