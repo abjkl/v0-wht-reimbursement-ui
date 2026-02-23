@@ -180,7 +180,6 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               />
             </div>
           </div>
-        </div>
       </div>
     );
   };
