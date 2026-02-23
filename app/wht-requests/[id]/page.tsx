@@ -36,6 +36,7 @@ export default function RequestDetailPage() {
   const [rejectionReasons, setRejectionReasons] = useState<string[]>([]);
   const [showManualDecision, setShowManualDecision] = useState(false);
   const [activeDocTab, setActiveDocTab] = useState('wht-slip');
+  const [showAllValidationChecks, setShowAllValidationChecks] = useState(false);
 
   const request = requests.find(r => r.id === params.id);
 
@@ -223,21 +224,29 @@ export default function RequestDetailPage() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Validation Checks:</span>
-              <div className="flex items-center gap-1">
-                {validationChecks.map((check, idx) => (
+              <div className="flex items-center gap-2">
+                {(showAllValidationChecks ? validationChecks : validationChecks.slice(0, 2)).map((check, idx) => (
                   <div 
                     key={idx} 
-                    className="group relative flex items-center"
-                    title={check.label}
+                    className="flex items-center gap-1 rounded-md border bg-background px-2 py-0.5"
                   >
                     {check.passed ? (
-                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
                     ) : (
-                      <XCircle className="h-4 w-4 text-destructive" />
+                      <XCircle className="h-3.5 w-3.5 text-destructive" />
                     )}
+                    <span className="text-xs font-medium">{check.label}</span>
                   </div>
                 ))}
-                <span className="ml-1 text-sm font-medium">
+                {validationChecks.length > 2 && (
+                  <button
+                    onClick={() => setShowAllValidationChecks(!showAllValidationChecks)}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    {showAllValidationChecks ? 'Show less' : `+${validationChecks.length - 2} more`}
+                  </button>
+                )}
+                <span className="ml-1 text-sm font-medium text-muted-foreground">
                   {passedChecks}/{validationChecks.length}
                 </span>
               </div>
