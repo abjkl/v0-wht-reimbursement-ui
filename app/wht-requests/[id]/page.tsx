@@ -308,29 +308,36 @@ export default function RequestDetailPage() {
       {request.status !== 'Approved' && request.status !== 'Rejected' && (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-lg">
           <div className="flex items-center justify-between px-6 py-4">
-            <Button
-              variant="outline"
-              onClick={() => setShowRejectDialog(true)}
-            >
-              Reject to Requestor
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowRejectDialog(true)}
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Reject
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowApproveDialog(true)}
+              >
+                <CheckCircle className="mr-2 h-4 w-4" />
+                Approve
+              </Button>
+            </div>
             <div className="flex gap-2">
               {request.aiSuggestion !== 'Pending Review' && (
                 <Button
-                  variant="outline"
                   onClick={handleAcceptAI}
+                  variant={request.aiSuggestion === 'Approve' ? 'default' : 'destructive'}
                 >
                   <CheckCircle className="mr-2 h-4 w-4" />
-                  Accept AI Suggestion
+                  Accept AI Suggestion ({request.aiSuggestion})
                 </Button>
               )}
-              {nextRequest ? (
-                <Button onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}>
-                  Next Step
-                </Button>
-              ) : (
-                <Button onClick={() => setShowApproveDialog(true)}>
-                  Approve
+              {nextRequest && (
+                <Button variant="outline" onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}>
+                  Next Request
+                  <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
               )}
             </div>
