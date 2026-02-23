@@ -4,6 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useStore } from '@/lib/store';
 import { DocumentViewer } from '@/components/document-viewer';
+import { DocumentContextPanel } from '@/components/document-context-panel';
 import { AIReviewPanel } from '@/components/ai-review-panel';
 import { AuditLog } from '@/components/audit-log';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,7 @@ export default function RequestDetailPage() {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReasons, setRejectionReasons] = useState<string[]>([]);
   const [showManualDecision, setShowManualDecision] = useState(false);
+  const [activeDocTab, setActiveDocTab] = useState('wht-slip');
 
   const request = requests.find(r => r.id === params.id);
 
@@ -267,75 +269,8 @@ export default function RequestDetailPage() {
             </CardContent>
           </Card>
 
-          {/* Additional Details */}
-          {(request.shopId || request.merchantId || request.userId) && (
-            <Card className="shadow-sm">
-              <CardContent className="space-y-4 py-6">
-                <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                  {request.shopId && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Shop ID</p>
-                      <p className="font-mono text-sm">{request.shopId}</p>
-                    </div>
-                  )}
-                  {request.userId && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">User ID</p>
-                      <p className="font-mono text-sm">{request.userId}</p>
-                    </div>
-                  )}
-                  {request.merchantId && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Merchant ID</p>
-                      <p className="font-mono text-sm">{request.merchantId}</p>
-                    </div>
-                  )}
-                  {request.storeId && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Store ID</p>
-                      <p className="font-mono text-sm">{request.storeId}</p>
-                    </div>
-                  )}
-                  {request.settleTo && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Settle To</p>
-                      <p className="text-sm">{request.settleTo}</p>
-                    </div>
-                  )}
-                  {request.midSid && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">MID/SID</p>
-                      <p className="font-mono text-sm">{request.midSid}</p>
-                    </div>
-                  )}
-                  {request.approverName && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Approver</p>
-                      <p className="text-sm">{request.approverName}</p>
-                    </div>
-                  )}
-                  {request.approvalDate && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Approval Date</p>
-                      <p className="text-sm">{formatDate(request.approvalDate)}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Injection Status</p>
-                    <Badge variant={request.injectionStatus === 'Done' ? 'default' : 'secondary'} className="text-xs">
-                      {request.injectionStatus}
-                    </Badge>
-                  </div>
-                  {request.injectionDate && (
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Injection Date</p>
-                      <p className="text-sm">{formatDate(request.injectionDate)}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Document Context Panel - Changes based on active tab */}
+          <DocumentContextPanel request={request} activeTab={activeDocTab} />
 
           {/* AI Review */}
           <AIReviewPanel request={request} />
@@ -346,7 +281,7 @@ export default function RequestDetailPage() {
 
         {/* Right Panel - Document Viewer */}
         <div className="flex-1 p-6">
-          <DocumentViewer request={request} />
+          <DocumentViewer request={request} onTabChange={setActiveDocTab} />
         </div>
       </div>
 

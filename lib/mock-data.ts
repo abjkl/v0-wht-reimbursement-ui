@@ -22,6 +22,39 @@ export const mockRequests: WHTRequest[] = [
     shopId: "12345678",
     userId: "987654321",
     docsComplete: { invoice: true, taxInvoice: true, whtSlip: true },
+    extracted: {
+      whtSlip: {
+        slipNumber: "BP-2301-000123",
+        taxPeriod: "January 2026",
+        taxpayerNpwp: "01.234.567.8-901.000",
+        taxpayerName: "PT Mall Fashion Indonesia",
+        collectorNpwp: "02.345.678.9-012.000",
+        collectorName: "PT Shopee Indonesia",
+        whtCode: "23-100-01",
+        whtRate: 2,
+        taxBase: 250000000,
+        whtAmount: 5000000,
+        referencedInvoiceNumber: "010.000-26.00000123"
+      },
+      taxInvoice: {
+        taxInvoiceNumber: "010.000-26.00000123",
+        taxInvoiceDate: "2026-01-15",
+        issuerNpwp: "01.234.567.8-901.000",
+        issuerName: "PT Mall Fashion Indonesia",
+        buyerNpwp: "02.345.678.9-012.000",
+        buyerName: "PT Shopee Indonesia",
+        dppTaxBase: 250000000,
+        vatAmount: 27500000,
+        totalAmount: 277500000
+      },
+      shopeeInvoice: {
+        invoiceNumberOcr: "INV-MP-2026-0001",
+        invoiceDate: "2026-01-14",
+        issuerName: "PT Shopee Indonesia",
+        amountBeforeTax: 250000000,
+        totalAmount: 250000000
+      }
+    },
     auditLog: [
       {
         timestamp: "2026-02-20T08:30:00Z",

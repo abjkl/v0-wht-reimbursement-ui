@@ -14,6 +14,40 @@ export type InjectionStatus = "Done" | "Not Started" | "Failed";
 
 export type AISuggestion = "Approve" | "Reject" | "Pending Review";
 
+export interface ExtractedWHTSlip {
+  slipNumber?: string;
+  taxPeriod?: string;
+  taxpayerNpwp?: string;
+  taxpayerName?: string;
+  collectorNpwp?: string;
+  collectorName?: string;
+  whtCode?: string;
+  whtRate?: number;
+  taxBase?: number;
+  whtAmount?: number;
+  referencedInvoiceNumber?: string;
+}
+
+export interface ExtractedTaxInvoice {
+  taxInvoiceNumber?: string;
+  taxInvoiceDate?: string;
+  issuerNpwp?: string;
+  issuerName?: string;
+  buyerNpwp?: string;
+  buyerName?: string;
+  dppTaxBase?: number;
+  vatAmount?: number;
+  totalAmount?: number;
+}
+
+export interface ExtractedShopeeInvoice {
+  invoiceNumberOcr?: string;
+  invoiceDate?: string;
+  issuerName?: string;
+  amountBeforeTax?: number;
+  totalAmount?: number;
+}
+
 export interface WHTRequest {
   // System fields
   id: string;
@@ -57,6 +91,13 @@ export interface WHTRequest {
     invoice: boolean;
     taxInvoice: boolean;
     whtSlip: boolean;
+  };
+
+  // Extracted document data
+  extracted?: {
+    whtSlip?: ExtractedWHTSlip;
+    taxInvoice?: ExtractedTaxInvoice;
+    shopeeInvoice?: ExtractedShopeeInvoice;
   };
 
   // Audit log

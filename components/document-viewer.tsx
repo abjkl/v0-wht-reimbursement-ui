@@ -9,11 +9,17 @@ import type { WHTRequest } from '@/lib/types';
 
 interface DocumentViewerProps {
   request: WHTRequest;
+  onTabChange?: (tab: string) => void;
 }
 
-export function DocumentViewer({ request }: DocumentViewerProps) {
+export function DocumentViewer({ request, onTabChange }: DocumentViewerProps) {
   const [zoom, setZoom] = useState(100);
   const [activeTab, setActiveTab] = useState('wht-slip');
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    onTabChange?.(value);
+  };
 
   const docs = [
     {
@@ -40,7 +46,7 @@ export function DocumentViewer({ request }: DocumentViewerProps) {
 
   return (
     <Card className="flex h-full flex-col bg-muted/30">
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex h-full flex-col">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="flex h-full flex-col">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <TabsList>
             {docs.map(doc => (
