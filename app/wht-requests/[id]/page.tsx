@@ -436,8 +436,15 @@ export default function RequestDetailPage() {
             
             {/* Expanded Validation Checks */}
             {showAllValidationChecks && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-2 border-t bg-card shadow-lg">
-                <div className="max-h-[70vh] overflow-auto p-6">
+              <>
+                {/* Backdrop */}
+                <div 
+                  className="fixed inset-0 z-40 bg-black/20"
+                  onClick={() => setShowAllValidationChecks(false)}
+                />
+                {/* Dropdown */}
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 border-t bg-card shadow-xl">
+                  <div className="max-h-[70vh] overflow-auto p-6">
                   <div className="mx-auto max-w-4xl space-y-6">
                     {Object.entries(
                       validationChecks.reduce((acc, check) => {
@@ -490,7 +497,7 @@ export default function RequestDetailPage() {
                     ))}
                   </div>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>
