@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, CheckCircle, XCircle, ChevronRight } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
