@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Pencil, Check, X } from 'lucide-react';
 import type { WHTRequest } from '@/lib/types';
-import { formatCurrency } from '@/lib/filter-utils';
 
 interface DocumentContextPanelProps {
   request: WHTRequest;
@@ -16,90 +15,65 @@ interface DocumentContextPanelProps {
 
 interface EditableFieldProps {
   label: string;
-  value: string | number | undefined | null;
+  value?: string | number;
   isMoney?: boolean;
-  onSave?: (newValue: string) => void;
+  onSave: (value: string) => void;
 }
 
 function EditableField({ label, value, isMoney, onSave }: EditableFieldProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState('');
-
-  const displayValue = value 
-    ? (isMoney && typeof value === 'number' ? formatCurrency(value) : String(value))
-    : '—';
-  
-  const isEmpty = !value;
-
-  const handleEdit = () => {
-    setEditValue(value ? String(value) : '');
-    setIsEditing(true);
-  };
+  const [editValue, setEditValue] = useState(String(value || ''));
 
   const handleSave = () => {
-    onSave?.(editValue);
+    onSave(editValue);
     setIsEditing(false);
   };
 
   const handleCancel = () => {
+    setEditValue(String(value || ''));
     setIsEditing(false);
-    setEditValue('');
   };
 
+  const displayValue = isMoney && value ? `Rp ${Number(value).toLocaleString()}` : value || '-';
+
   return (
-    <div className="group">
-      <p className="text-sm font-medium text-muted-foreground mb-1">{label}</p>
-      <div className="flex items-center gap-2">
-        {isEditing ? (
-          <>
-            <Input
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              className="h-8 text-sm"
-              autoFocus
-            />
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              onClick={handleSave}
-            >
-              <Check className="h-4 w-4 text-green-600" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              onClick={handleCancel}
-            >
-              <X className="h-4 w-4 text-destructive" />
-            </Button>
-          </>
-        ) : (
-          <>
-            <p className={`text-sm flex-1 ${isEmpty ? 'text-muted-foreground' : 'text-foreground'}`}>
-              {displayValue}
-            </p>
-            {onSave && (
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                onClick={handleEdit}
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-            )}
-          </>
-        )}
-      </div>
+    <div className="space-y-1">
+      <div className="text-xs text-muted-foreground">{label}</div>
+      {isEditing ? (
+        <div className="flex items-center gap-2">
+          <Input
+            value={editValue}
+            onChange={(e) => setEditValue(e.target.value)}
+            className="h-8 text-sm"
+            autoFocus
+          />
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleSave}>
+            <Check className="h-3.5 w-3.5 text-green-600" />
+          </Button>
+          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleCancel}>
+            <X className="h-3.5 w-3.5 text-destructive" />
+          </Button>
+        </div>
+      ) : (
+        <div className="group flex items-center gap-2">
+          <span className="text-sm font-medium">{displayValue}</span>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-6 w-6 opacity-0 group-hover:opacity-100"
+            onClick={() => setIsEditing(true)}
+          >
+            <Pencil className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
 
 export function DocumentContextPanel({ request, activeTab }: DocumentContextPanelProps) {
-  const handleFieldSave = (field: string) => (newValue: string) => {
-    console.log('[v0] Saving field:', field, newValue);
+  const handleFieldSave = (field: string) => (value: string) => {
+    console.log('[v0] Saving field:', field, 'with value:', value);
   };
 
   const renderWHTSlipFields = () => {
@@ -110,8 +84,8 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
           <EditableField
             label="WHT Slip Number (Nomor Bukti Potong)"
-            value={wht?.slipNumber}
-            onSave={handleFieldSave('slipNumber')}
+            value={wht?.whtSlipNumber}
+            onSave={handleFieldSave('whtSlipNumber')}
           />
           <EditableField
             label="Tax Period / Masa Pajak (MM-YYYY)"
@@ -328,16 +302,10 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
   };
 
   const getDocumentTitle = () => {
-    switch (activeTab) {
-      case 'wht-slip':
-        return 'Parsed Key Fields - WHT Slip';
-      case 'tax-invoice':
-        return 'Parsed Key Fields - Tax Invoice';
-      case 'shopee-invoice':
-        return 'Parsed Key Fields - Shopee Invoice';
-      default:
-        return 'Parsed Key Fields';
-    }
+    if (activeTab === 'wht-slip') return 'Parsed Key Fields - WHT Slip';
+    if (activeTab === 'tax-invoice') return 'Parsed Key Fields - Tax Invoice';
+    if (activeTab === 'shopee-invoice') return 'Parsed Key Fields - Shopee Invoice';
+    return 'Parsed Key Fields';
   };
 
   return (
