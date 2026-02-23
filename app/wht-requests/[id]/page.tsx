@@ -214,68 +214,6 @@ export default function RequestDetailPage() {
       <div className="flex flex-1 overflow-hidden bg-background">
         {/* Left Panel - Request Details */}
         <div className="w-1/2 space-y-4 overflow-auto border-r bg-background p-6 pb-32">
-          {/* Request ID Card */}
-          <Card className="shadow-sm">
-            <CardHeader className="border-b bg-muted/30 pb-3">
-              <CardTitle className="text-base font-semibold">{request.id}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-6">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                <div>
-                  <p className="text-sm font-medium text-foreground">Request ID</p>
-                  <p className="text-sm text-primary">{request.id}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Transaction Type</p>
-                  <p className="text-sm">{request.transactionType}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Submission Date</p>
-                  <p className="text-sm">{formatDate(request.submissionDate)}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Invoice Number</p>
-                  <p className="text-sm">{request.invoiceNumber}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Requestor Email</p>
-                  <p className="text-sm">{request.requestorEmail}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Party Type</p>
-                  <p className="text-sm">{request.sellerType}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm font-medium text-foreground">Nama Perusahaan</p>
-                  <p className="text-sm">
-                    {request.sellerCompanyName || request.syncedCompanyName || '—'}
-                    {!request.sellerCompanyName && request.syncedCompanyName && (
-                      <Badge variant="secondary" className="ml-2 text-[10px]">
-                        synced
-                      </Badge>
-                    )}
-                  </p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm font-medium text-foreground">
-                    {request.usernameShopee ? 'Username Shopee' : 'Merchant Name'}
-                  </p>
-                  <p className="text-sm">{request.usernameShopee || request.merchantName}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Requested Amount</p>
-                  <p className="text-sm font-semibold">{formatCurrency(request.requestedReimbursementAmount)}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Status</p>
-                  <Badge variant={getStatusBadgeVariant(request.status)} className="text-xs">
-                    {request.status}
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Document Context Panel - Changes based on active tab */}
           <DocumentContextPanel request={request} activeTab={activeDocTab} />
 
