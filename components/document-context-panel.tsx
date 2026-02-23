@@ -14,14 +14,14 @@ interface DocumentContextPanelProps {
   activeTab: string;
 }
 
-interface EditableFieldRowProps {
+interface EditableFieldProps {
   label: string;
   value: string | number | undefined | null;
   isMoney?: boolean;
   onSave?: (newValue: string) => void;
 }
 
-function EditableFieldRow({ label, value, isMoney, onSave }: EditableFieldRowProps) {
+function EditableField({ label, value, isMoney, onSave }: EditableFieldProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState('');
 
@@ -47,49 +47,49 @@ function EditableFieldRow({ label, value, isMoney, onSave }: EditableFieldRowPro
   };
 
   return (
-    <div className="group flex items-center justify-between gap-3 py-2 hover:bg-muted/30 rounded px-2 -mx-2">
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-foreground">{label}</p>
-      </div>
+    <div className="group">
+      <p className="text-sm font-medium text-muted-foreground mb-1">{label}</p>
       <div className="flex items-center gap-2">
         {isEditing ? (
           <>
             <Input
               value={editValue}
               onChange={(e) => setEditValue(e.target.value)}
-              className="h-7 w-40 text-sm"
+              className="h-8 text-sm"
               autoFocus
             />
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 w-7 p-0"
+              className="h-8 w-8 p-0"
               onClick={handleSave}
             >
-              <Check className="h-3.5 w-3.5 text-green-600" />
+              <Check className="h-4 w-4 text-green-600" />
             </Button>
             <Button
               size="sm"
               variant="ghost"
-              className="h-7 w-7 p-0"
+              className="h-8 w-8 p-0"
               onClick={handleCancel}
             >
-              <X className="h-3.5 w-3.5 text-destructive" />
+              <X className="h-4 w-4 text-destructive" />
             </Button>
           </>
         ) : (
           <>
-            <p className={`text-sm ${isEmpty ? 'text-muted-foreground' : 'font-mono'}`}>
+            <p className={`text-sm flex-1 ${isEmpty ? 'text-muted-foreground' : 'text-foreground'}`}>
               {displayValue}
             </p>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-7 w-7 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-              onClick={handleEdit}
-            >
-              <Pencil className="h-3.5 w-3.5" />
-            </Button>
+            {onSave && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={handleEdit}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </>
         )}
       </div>
@@ -97,254 +97,299 @@ function EditableFieldRow({ label, value, isMoney, onSave }: EditableFieldRowPro
   );
 }
 
-interface SectionHeaderProps {
-  title: string;
-}
-
-function SectionHeader({ title }: SectionHeaderProps) {
-  return (
-    <>
-      <Separator className="my-3" />
-      <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-        {title}
-      </h4>
-    </>
-  );
-}
-
 export function DocumentContextPanel({ request, activeTab }: DocumentContextPanelProps) {
-  const { extracted } = request;
-
-  const handleFieldSave = (fieldPath: string, newValue: string) => {
-    console.log('[v0] Saving field:', fieldPath, newValue);
-    // TODO: Implement actual save logic via API
+  const handleFieldSave = (field: string) => (newValue: string) => {
+    console.log('[v0] Saving field:', field, newValue);
+    // In production, this would make an API call to update the field
   };
 
-  // WHT Slip Tab Content
-  if (activeTab === 'wht-slip') {
-    const whtData = extracted?.whtSlip;
-
+  // WHT Slip Fields
+  const renderWHTSlipFields = () => {
+    const wht = request.extracted?.whtSlip;
+    
     return (
-      <Card className="shadow-sm">
-        <CardHeader className="border-b bg-muted/30 pb-3">
-          <CardTitle className="text-base font-semibold">Parsed Key Fields</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4">
-          {/* Slip Summary */}
-          <SectionHeader title="Slip Summary" />
-          <EditableFieldRow
-            label="WHT Slip Number (Nomor Bukti Potong)"
-            value={whtData?.slipNumber}
-            onSave={(val) => handleFieldSave('whtSlip.slipNumber', val)}
-          />
-          <EditableFieldRow
-            label="Tax Period / Masa Pajak (MM-YYYY)"
-            value={whtData?.taxPeriod}
-            onSave={(val) => handleFieldSave('whtSlip.taxPeriod', val)}
-          />
-          <EditableFieldRow
-            label="WHT Code"
-            value={whtData?.whtCode}
-            onSave={(val) => handleFieldSave('whtSlip.whtCode', val)}
-          />
-          <EditableFieldRow
-            label="WHT Rate (%)"
-            value={whtData?.whtRate}
-            onSave={(val) => handleFieldSave('whtSlip.whtRate', val)}
-          />
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            SLIP SUMMARY
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="WHT Slip Number (Nomor Bukti Potong)"
+              value={wht?.slipNumber}
+              onSave={handleFieldSave('slipNumber')}
+            />
+            <EditableField
+              label="Tax Period / Masa Pajak (MM-YYYY)"
+              value={wht?.taxPeriod}
+              onSave={handleFieldSave('taxPeriod')}
+            />
+            <EditableField
+              label="WHT Code"
+              value={wht?.whtCode}
+              onSave={handleFieldSave('whtCode')}
+            />
+            <EditableField
+              label="WHT Rate (%)"
+              value={wht?.whtRate}
+              onSave={handleFieldSave('whtRate')}
+            />
+          </div>
+        </div>
 
-          {/* Parties */}
-          <SectionHeader title="Parties" />
-          <EditableFieldRow
-            label="Taxpayer NPWP (Shopee)"
-            value={whtData?.taxpayerNpwp}
-            onSave={(val) => handleFieldSave('whtSlip.taxpayerNpwp', val)}
-          />
-          <EditableFieldRow
-            label="Taxpayer Name (Shopee)"
-            value={whtData?.taxpayerName}
-            onSave={(val) => handleFieldSave('whtSlip.taxpayerName', val)}
-          />
-          <EditableFieldRow
-            label="Collector NPWP (Seller/Merchant)"
-            value={whtData?.collectorNpwp}
-            onSave={(val) => handleFieldSave('whtSlip.collectorNpwp', val)}
-          />
-          <EditableFieldRow
-            label="Collector Name (Seller/Merchant)"
-            value={whtData?.collectorName}
-            onSave={(val) => handleFieldSave('whtSlip.collectorName', val)}
-          />
+        <Separator />
 
-          {/* Tax Detail */}
-          <SectionHeader title="Tax Detail" />
-          <EditableFieldRow
-            label="Tax Base / DPP"
-            value={whtData?.taxBase}
-            onSave={(val) => handleFieldSave('whtSlip.taxBase', val)}
-            isMoney
-          />
-          <EditableFieldRow
-            label="WHT Amount (PPh23)"
-            value={whtData?.whtAmount}
-            onSave={(val) => handleFieldSave('whtSlip.whtAmount', val)}
-            isMoney
-          />
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            PARTIES
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="Taxpayer NPWP (Shopee)"
+              value={wht?.taxpayerNpwp}
+              onSave={handleFieldSave('taxpayerNpwp')}
+            />
+            <EditableField
+              label="Taxpayer Name (Shopee)"
+              value={wht?.taxpayerName}
+              onSave={handleFieldSave('taxpayerName')}
+            />
+            <EditableField
+              label="Collector NPWP (Seller/Merchant)"
+              value={wht?.collectorNpwp}
+              onSave={handleFieldSave('collectorNpwp')}
+            />
+            <EditableField
+              label="Collector Name (Seller/Merchant)"
+              value={wht?.collectorName}
+              onSave={handleFieldSave('collectorName')}
+            />
+          </div>
+        </div>
 
-          {/* Invoice Reference */}
-          <SectionHeader title="Invoice Reference" />
-          <EditableFieldRow
-            label="Referenced Invoice Number (B9)"
-            value={whtData?.referencedInvoiceNumber}
-            onSave={(val) => handleFieldSave('whtSlip.referencedInvoiceNumber', val)}
-          />
-        </CardContent>
-      </Card>
+        <Separator />
+
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            TAX DETAIL
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="Tax Base / DPP"
+              value={wht?.taxBase}
+              isMoney
+              onSave={handleFieldSave('taxBase')}
+            />
+            <EditableField
+              label="WHT Amount (PPh23)"
+              value={wht?.whtAmount}
+              isMoney
+              onSave={handleFieldSave('whtAmount')}
+            />
+            <div className="col-span-2">
+              <EditableField
+                label="Referenced Invoice Number"
+                value={wht?.referencedInvoiceNumber}
+                onSave={handleFieldSave('referencedInvoiceNumber')}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     );
-  }
+  };
 
-  // Tax Invoice Tab Content
-  if (activeTab === 'tax-invoice') {
-    const taxData = extracted?.taxInvoice;
-
+  // Tax Invoice Fields
+  const renderTaxInvoiceFields = () => {
+    const tax = request.extracted?.taxInvoice;
+    
     return (
-      <Card className="shadow-sm">
-        <CardHeader className="border-b bg-muted/30 pb-3">
-          <CardTitle className="text-base font-semibold">Parsed Key Fields</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4">
-          {/* Tax Invoice Info */}
-          <SectionHeader title="Tax Invoice Info" />
-          <EditableFieldRow
-            label="Tax Invoice Number (Nomor Faktur Pajak)"
-            value={taxData?.taxInvoiceNumber}
-            onSave={(val) => handleFieldSave('taxInvoice.taxInvoiceNumber', val)}
-          />
-          <EditableFieldRow
-            label="Tax Invoice Date"
-            value={taxData?.taxInvoiceDate}
-            onSave={(val) => handleFieldSave('taxInvoice.taxInvoiceDate', val)}
-          />
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            INVOICE INFO
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="Tax Invoice Number"
+              value={tax?.taxInvoiceNumber}
+              onSave={handleFieldSave('taxInvoiceNumber')}
+            />
+            <EditableField
+              label="Tax Invoice Date"
+              value={tax?.taxInvoiceDate}
+              onSave={handleFieldSave('taxInvoiceDate')}
+            />
+          </div>
+        </div>
 
-          {/* Issuer (Shopee Entity) */}
-          <SectionHeader title="Issuer (Shopee Entity)" />
-          <EditableFieldRow
-            label="Issuer NPWP"
-            value={taxData?.issuerNpwp}
-            onSave={(val) => handleFieldSave('taxInvoice.issuerNpwp', val)}
-          />
-          <EditableFieldRow
-            label="Issuer Name"
-            value={taxData?.issuerName}
-            onSave={(val) => handleFieldSave('taxInvoice.issuerName', val)}
-          />
+        <Separator />
 
-          {/* Buyer (Seller/Merchant) */}
-          <SectionHeader title="Buyer (Seller/Merchant)" />
-          <EditableFieldRow
-            label="Buyer NPWP"
-            value={taxData?.buyerNpwp}
-            onSave={(val) => handleFieldSave('taxInvoice.buyerNpwp', val)}
-          />
-          <EditableFieldRow
-            label="Buyer Name"
-            value={taxData?.buyerName}
-            onSave={(val) => handleFieldSave('taxInvoice.buyerName', val)}
-          />
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            ISSUER (SELLER)
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="Issuer NPWP"
+              value={tax?.issuerNpwp}
+              onSave={handleFieldSave('issuerNpwp')}
+            />
+            <EditableField
+              label="Issuer Name"
+              value={tax?.issuerName}
+              onSave={handleFieldSave('issuerName')}
+            />
+          </div>
+        </div>
 
-          {/* Amounts */}
-          <SectionHeader title="Amounts" />
-          <EditableFieldRow
-            label="DPP / Tax Base (Harga Jual/Penggantian)"
-            value={taxData?.dppTaxBase}
-            onSave={(val) => handleFieldSave('taxInvoice.dppTaxBase', val)}
-            isMoney
-          />
-          <EditableFieldRow
-            label="VAT / PPN"
-            value={taxData?.vatAmount}
-            onSave={(val) => handleFieldSave('taxInvoice.vatAmount', val)}
-            isMoney
-          />
-          <EditableFieldRow
-            label="Total Amount"
-            value={taxData?.totalAmount}
-            onSave={(val) => handleFieldSave('taxInvoice.totalAmount', val)}
-            isMoney
-          />
-        </CardContent>
-      </Card>
+        <Separator />
+
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            BUYER (SHOPEE)
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="Buyer NPWP"
+              value={tax?.buyerNpwp}
+              onSave={handleFieldSave('buyerNpwp')}
+            />
+            <EditableField
+              label="Buyer Name"
+              value={tax?.buyerName}
+              onSave={handleFieldSave('buyerName')}
+            />
+          </div>
+        </div>
+
+        <Separator />
+
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            AMOUNTS
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="DPP (Tax Base)"
+              value={tax?.dppTaxBase}
+              isMoney
+              onSave={handleFieldSave('dppTaxBase')}
+            />
+            <EditableField
+              label="VAT Amount (PPN)"
+              value={tax?.vatAmount}
+              isMoney
+              onSave={handleFieldSave('vatAmount')}
+            />
+            <div className="col-span-2">
+              <EditableField
+                label="Total Amount"
+                value={tax?.totalAmount}
+                isMoney
+                onSave={handleFieldSave('totalAmount')}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     );
-  }
+  };
 
-  // Shopee Invoice Tab Content
-  if (activeTab === 'shopee-invoice') {
-    const shopeeData = extracted?.shopeeInvoice;
-
+  // Shopee Invoice Fields
+  const renderShopeeInvoiceFields = () => {
+    const invoice = request.extracted?.shopeeInvoice;
+    
     return (
-      <Card className="shadow-sm">
-        <CardHeader className="border-b bg-muted/30 pb-3">
-          <CardTitle className="text-base font-semibold">Parsed Key Fields</CardTitle>
-        </CardHeader>
-        <CardContent className="pt-4">
-          {/* Commercial Invoice Info */}
-          <SectionHeader title="Commercial Invoice Info" />
-          <EditableFieldRow
-            label="Seller Input Invoice Number"
-            value={request.invoiceNumber}
-            onSave={(val) => handleFieldSave('invoiceNumber', val)}
-          />
-          <EditableFieldRow
-            label="OCR Extracted Invoice Number"
-            value={shopeeData?.invoiceNumberOcr}
-            onSave={(val) => handleFieldSave('shopeeInvoice.invoiceNumberOcr', val)}
-          />
-          <EditableFieldRow
-            label="Invoice Date"
-            value={shopeeData?.invoiceDate}
-            onSave={(val) => handleFieldSave('shopeeInvoice.invoiceDate', val)}
-          />
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            INVOICE INFO
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="Invoice Number (OCR)"
+              value={invoice?.invoiceNumberOcr}
+              onSave={handleFieldSave('invoiceNumberOcr')}
+            />
+            <EditableField
+              label="Invoice Date"
+              value={invoice?.invoiceDate}
+              onSave={handleFieldSave('invoiceDate')}
+            />
+            <EditableField
+              label="Issuer Name"
+              value={invoice?.issuerName}
+              onSave={handleFieldSave('issuerName')}
+            />
+            <EditableField
+              label="Issuer NPWP"
+              value={invoice?.issuerNpwp}
+              onSave={handleFieldSave('issuerNpwp')}
+            />
+          </div>
+        </div>
 
-          {/* Issuer */}
-          <SectionHeader title="Issuer" />
-          <EditableFieldRow
-            label="Issuer Name"
-            value={shopeeData?.issuerName}
-            onSave={(val) => handleFieldSave('shopeeInvoice.issuerName', val)}
-          />
+        <Separator />
 
-          {/* Amounts */}
-          <SectionHeader title="Amounts" />
-          <EditableFieldRow
-            label="Amount Before Tax"
-            value={shopeeData?.amountBeforeTax}
-            onSave={(val) => handleFieldSave('shopeeInvoice.amountBeforeTax', val)}
-            isMoney
-          />
-          <EditableFieldRow
-            label="Total Amount"
-            value={shopeeData?.totalAmount}
-            onSave={(val) => handleFieldSave('shopeeInvoice.totalAmount', val)}
-            isMoney
-          />
-          <EditableFieldRow
-            label="Currency"
-            value={shopeeData?.currency || 'IDR'}
-            onSave={(val) => handleFieldSave('shopeeInvoice.currency', val)}
-          />
-        </CardContent>
-      </Card>
+        <div>
+          <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            AMOUNTS
+          </h3>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+            <EditableField
+              label="Amount Before Tax"
+              value={invoice?.amountBeforeTax}
+              isMoney
+              onSave={handleFieldSave('amountBeforeTax')}
+            />
+            <EditableField
+              label="Total Amount"
+              value={invoice?.totalAmount}
+              isMoney
+              onSave={handleFieldSave('totalAmount')}
+            />
+            <EditableField
+              label="Currency"
+              value={invoice?.currency}
+              onSave={handleFieldSave('currency')}
+            />
+            <EditableField
+              label="Line Item Count"
+              value={invoice?.lineItemCount}
+              onSave={handleFieldSave('lineItemCount')}
+            />
+          </div>
+        </div>
+
+        {invoice?.description && (
+          <>
+            <Separator />
+            <div>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+                DESCRIPTION
+              </h3>
+              <EditableField
+                label="Invoice Description"
+                value={invoice.description}
+                onSave={handleFieldSave('description')}
+              />
+            </div>
+          </>
+        )}
+      </div>
     );
-  }
+  };
 
-  // Default fallback
   return (
     <Card className="shadow-sm">
       <CardHeader className="border-b bg-muted/30 pb-3">
         <CardTitle className="text-base font-semibold">Parsed Key Fields</CardTitle>
       </CardHeader>
-      <CardContent className="pt-4">
-        <p className="text-sm text-muted-foreground">Select a document to view parsed fields</p>
+      <CardContent className="pt-6">
+        {activeTab === 'wht-slip' && renderWHTSlipFields()}
+        {activeTab === 'tax-invoice' && renderTaxInvoiceFields()}
+        {activeTab === 'shopee-invoice' && renderShopeeInvoiceFields()}
       </CardContent>
     </Card>
   );

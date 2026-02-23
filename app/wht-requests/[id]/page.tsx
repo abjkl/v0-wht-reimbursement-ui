@@ -185,9 +185,6 @@ export default function RequestDetailPage() {
             >
               Attachments
             </Button>
-            <Button variant="outline" size="sm">
-              Processing Progress
-            </Button>
           </div>
         </div>
       </div>
