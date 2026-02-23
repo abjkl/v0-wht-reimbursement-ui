@@ -308,68 +308,70 @@ export default function RequestDetailPage() {
       {/* Sticky Bottom Actions */}
       {request.status !== 'Approved' && request.status !== 'Rejected' && (
         <div className="fixed bottom-0 left-0 right-0 border-t bg-background shadow-lg">
-          <div className="flex flex-col items-center justify-center gap-3 px-6 py-6">
-            {/* AI Suggestion - Primary Action */}
-            {request.aiSuggestion !== 'Pending Review' && (
-              <div className="flex flex-col items-center gap-2">
-                <Button
-                  size="lg"
-                  onClick={handleAcceptAI}
-                  className={`h-12 px-8 text-base ${
-                    request.aiSuggestion === 'Approve'
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : 'bg-destructive hover:bg-destructive/90'
-                  }`}
-                >
-                  <CheckCircle className="mr-2 h-5 w-5" />
-                  Accept AI Suggestion ({request.aiSuggestion})
-                  <span className="ml-2 text-sm opacity-90">
-                    {Math.round(request.aiConfidence * 100)}%
-                  </span>
-                </Button>
-                <button
-                  onClick={() => setShowManualDecision(!showManualDecision)}
-                  className="text-sm text-muted-foreground hover:text-foreground hover:underline"
-                >
-                  Or decide manually {showManualDecision ? '▲' : '▼'}
-                </button>
-              </div>
-            )}
-
-            {/* Manual Decision Options - Collapsible */}
-            {(showManualDecision || request.aiSuggestion === 'Pending Review') && (
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => setShowRejectDialog(true)}
-                  className="h-11"
-                >
-                  <XCircle className="mr-2 h-4 w-4" />
-                  Reject
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => setShowApproveDialog(true)}
-                  className="h-11"
-                >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Approve
-                </Button>
-                {nextRequest && (
+          <div className="flex items-start justify-end gap-3 px-6 py-6">
+            <div className="flex flex-col items-end gap-3">
+              {/* AI Suggestion - Primary Action */}
+              {request.aiSuggestion !== 'Pending Review' && (
+                <div className="flex flex-col items-end gap-2">
                   <Button
-                    variant="ghost"
                     size="lg"
-                    onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}
+                    onClick={handleAcceptAI}
+                    className={`h-12 px-8 text-base ${
+                      request.aiSuggestion === 'Approve'
+                        ? 'bg-green-600 hover:bg-green-700'
+                        : 'bg-destructive hover:bg-destructive/90'
+                    }`}
+                  >
+                    <CheckCircle className="mr-2 h-5 w-5" />
+                    Accept AI Suggestion ({request.aiSuggestion})
+                    <span className="ml-2 text-sm opacity-90">
+                      {Math.round(request.aiConfidence * 100)}%
+                    </span>
+                  </Button>
+                  <button
+                    onClick={() => setShowManualDecision(!showManualDecision)}
+                    className="text-sm text-muted-foreground hover:text-foreground hover:underline"
+                  >
+                    Or decide manually {showManualDecision ? '▲' : '▼'}
+                  </button>
+                </div>
+              )}
+
+              {/* Manual Decision Options - Collapsible */}
+              {(showManualDecision || request.aiSuggestion === 'Pending Review') && (
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setShowRejectDialog(true)}
                     className="h-11"
                   >
-                    Next Request
-                    <ChevronRight className="ml-2 h-4 w-4" />
+                    <XCircle className="mr-2 h-4 w-4" />
+                    Reject
                   </Button>
-                )}
-              </div>
-            )}
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setShowApproveDialog(true)}
+                    className="h-11"
+                  >
+                    <CheckCircle className="mr-2 h-4 w-4" />
+                    Approve
+                  </Button>
+                  {nextRequest && (
+                    <Button
+                      variant="ghost"
+                      size="lg"
+                      onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}
+                      className="h-11"
+                    >
+                      Next Request
+                      <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
