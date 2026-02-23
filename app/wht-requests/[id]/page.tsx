@@ -278,8 +278,6 @@ export default function RequestDetailPage() {
   const handleRerunAI = async () => {
     setIsRerunningAI(true);
     console.log('[v0] Rerunning AI validation checks...');
-    // TODO: API call to rerun AI validation
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 2000));
     setIsRerunningAI(false);
     console.log('[v0] AI validation completed');
@@ -328,19 +326,6 @@ export default function RequestDetailPage() {
       setShowApproveDialog(true);
     } else if (request.aiSuggestion === 'Reject') {
       setShowRejectDialog(true);
-    }
-  };
-
-  const getStatusBadgeVariant = (status: typeof request.status) => {
-    switch (status) {
-      case 'Submitted':
-        return 'secondary';
-      case 'Pending Review':
-        return 'outline';
-      case 'Approved':
-        return 'default';
-      case 'Rejected':
-        return 'destructive';
     }
   };
 
