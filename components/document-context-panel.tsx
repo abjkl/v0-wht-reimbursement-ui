@@ -100,91 +100,88 @@ function EditableField({ label, value, isMoney, onSave }: EditableFieldProps) {
 export function DocumentContextPanel({ request, activeTab }: DocumentContextPanelProps) {
   const handleFieldSave = (field: string) => (newValue: string) => {
     console.log('[v0] Saving field:', field, newValue);
-    // In production, this would make an API call to update the field
   };
 
-  // WHT Slip Fields
   const renderWHTSlipFields = () => {
     const wht = request.extracted?.whtSlip;
     
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-            <EditableField
-              label="WHT Slip Number (Nomor Bukti Potong)"
-              value={wht?.slipNumber}
-              onSave={handleFieldSave('slipNumber')}
-            />
-            <EditableField
-              label="Tax Period / Masa Pajak (MM-YYYY)"
-              value={wht?.taxPeriod}
-              onSave={handleFieldSave('taxPeriod')}
-            />
-            <EditableField
-              label="WHT Code"
-              value={wht?.whtCode}
-              onSave={handleFieldSave('whtCode')}
-            />
-            <EditableField
-              label="WHT Rate (%)"
-              value={wht?.whtRate}
-              onSave={handleFieldSave('whtRate')}
-            />
-          </div>
+          <EditableField
+            label="WHT Slip Number (Nomor Bukti Potong)"
+            value={wht?.slipNumber}
+            onSave={handleFieldSave('slipNumber')}
+          />
+          <EditableField
+            label="Tax Period / Masa Pajak (MM-YYYY)"
+            value={wht?.taxPeriod}
+            onSave={handleFieldSave('taxPeriod')}
+          />
+          <EditableField
+            label="WHT Code"
+            value={wht?.whtCode}
+            onSave={handleFieldSave('whtCode')}
+          />
+          <EditableField
+            label="WHT Rate (%)"
+            value={wht?.whtRate}
+            onSave={handleFieldSave('whtRate')}
+          />
+        </div>
 
         <Separator />
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-            <EditableField
-              label="Taxpayer NPWP (Shopee)"
-              value={wht?.taxpayerNpwp}
-              onSave={handleFieldSave('taxpayerNpwp')}
-            />
-            <EditableField
-              label="Taxpayer Name (Shopee)"
-              value={wht?.taxpayerName}
-              onSave={handleFieldSave('taxpayerName')}
-            />
-            <EditableField
-              label="Collector NPWP (Seller/Merchant)"
-              value={wht?.collectorNpwp}
-              onSave={handleFieldSave('collectorNpwp')}
-            />
-            <EditableField
-              label="Collector Name (Seller/Merchant)"
-              value={wht?.collectorName}
-              onSave={handleFieldSave('collectorName')}
-            />
-          </div>
+          <EditableField
+            label="Taxpayer NPWP (Shopee)"
+            value={wht?.taxpayerNpwp}
+            onSave={handleFieldSave('taxpayerNpwp')}
+          />
+          <EditableField
+            label="Taxpayer Name (Shopee)"
+            value={wht?.taxpayerName}
+            onSave={handleFieldSave('taxpayerName')}
+          />
+          <EditableField
+            label="Collector NPWP (Seller/Merchant)"
+            value={wht?.collectorNpwp}
+            onSave={handleFieldSave('collectorNpwp')}
+          />
+          <EditableField
+            label="Collector Name (Seller/Merchant)"
+            value={wht?.collectorName}
+            onSave={handleFieldSave('collectorName')}
+          />
+        </div>
 
         <Separator />
 
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+          <EditableField
+            label="Tax Base / DPP"
+            value={wht?.taxBase}
+            isMoney
+            onSave={handleFieldSave('taxBase')}
+          />
+          <EditableField
+            label="WHT Amount (PPh23)"
+            value={wht?.whtAmount}
+            isMoney
+            onSave={handleFieldSave('whtAmount')}
+          />
+          <div className="col-span-2">
             <EditableField
-              label="Tax Base / DPP"
-              value={wht?.taxBase}
-              isMoney
-              onSave={handleFieldSave('taxBase')}
+              label="Referenced Invoice Number"
+              value={wht?.referencedInvoiceNumber}
+              onSave={handleFieldSave('referencedInvoiceNumber')}
             />
-            <EditableField
-              label="WHT Amount (PPh23)"
-              value={wht?.whtAmount}
-              isMoney
-              onSave={handleFieldSave('whtAmount')}
-            />
-            <div className="col-span-2">
-              <EditableField
-                label="Referenced Invoice Number"
-                value={wht?.referencedInvoiceNumber}
-                onSave={handleFieldSave('referencedInvoiceNumber')}
-              />
-            </div>
           </div>
+        </div>
       </div>
     );
   };
 
-  // Tax Invoice Fields
   const renderTaxInvoiceFields = () => {
     const tax = request.extracted?.taxInvoice;
     
@@ -261,7 +258,6 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
     );
   };
 
-  // Shopee Invoice Fields
   const renderShopeeInvoiceFields = () => {
     const invoice = request.extracted?.shopeeInvoice;
     
