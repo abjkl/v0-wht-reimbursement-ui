@@ -331,10 +331,23 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
     );
   };
 
+  const getDocumentTitle = () => {
+    switch (activeTab) {
+      case 'wht-slip':
+        return 'Parsed Key Fields - WHT Slip';
+      case 'tax-invoice':
+        return 'Parsed Key Fields - Tax Invoice';
+      case 'shopee-invoice':
+        return 'Parsed Key Fields - Shopee Invoice';
+      default:
+        return 'Parsed Key Fields';
+    }
+  };
+
   return (
     <Card className="shadow-sm">
       <CardHeader className="border-b bg-muted/30 pb-3">
-        <CardTitle className="text-base font-semibold">Parsed Key Fields</CardTitle>
+        <CardTitle className="text-base font-semibold">{getDocumentTitle()}</CardTitle>
       </CardHeader>
       <CardContent className="pt-6">
         {activeTab === 'wht-slip' && renderWHTSlipFields()}
