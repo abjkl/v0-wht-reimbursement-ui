@@ -15,7 +15,7 @@ export type InjectionStatus = "Done" | "Not Started" | "Failed";
 export type AISuggestion = "Approve" | "Reject" | "Pending Review";
 
 export interface ExtractedWHTSlip {
-  slipNumber?: string;
+  whtSlipNumber?: string;
   taxPeriod?: string;
   taxpayerNpwp?: string;
   taxpayerName?: string;
@@ -26,6 +26,8 @@ export interface ExtractedWHTSlip {
   taxBase?: number;
   whtAmount?: number;
   referencedInvoiceNumber?: string;
+  // Field metadata
+  _metadata?: Record<string, FieldMetadata>;
 }
 
 export interface ExtractedTaxInvoice {
@@ -38,6 +40,8 @@ export interface ExtractedTaxInvoice {
   dppTaxBase?: number;
   vatAmount?: number;
   totalAmount?: number;
+  // Field metadata
+  _metadata?: Record<string, FieldMetadata>;
 }
 
 export interface ExtractedShopeeInvoice {
@@ -50,6 +54,8 @@ export interface ExtractedShopeeInvoice {
   currency?: string;
   lineItemCount?: number;
   description?: string;
+  // Field metadata
+  _metadata?: Record<string, FieldMetadata>;
 }
 
 export interface WHTRequest {

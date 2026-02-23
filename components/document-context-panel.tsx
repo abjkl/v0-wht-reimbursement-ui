@@ -77,6 +77,14 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
     // TODO: API call to update field
   };
 
+  const getFieldMetadata = (metadata: Record<string, any> | undefined, fieldName: string) => {
+    const fieldMeta = metadata?.[fieldName];
+    return {
+      source: (fieldMeta?.source || 'ai') as 'ai' | 'user',
+      updatedBy: fieldMeta?.updatedBy
+    };
+  };
+
   const renderWHTSlipFields = () => {
     const wht = request.extracted?.whtSlip;
     
@@ -87,21 +95,25 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             label="WHT Slip Number (Nomor Bukti Potong)"
             value={wht?.whtSlipNumber}
             onSave={handleFieldSave('whtSlipNumber')}
+            {...getFieldMetadata(wht?._metadata, 'whtSlipNumber')}
           />
           <EditableField
             label="Tax Period / Masa Pajak (MM-YYYY)"
             value={wht?.taxPeriod}
             onSave={handleFieldSave('taxPeriod')}
+            {...getFieldMetadata(wht?._metadata, 'taxPeriod')}
           />
           <EditableField
             label="WHT Code"
             value={wht?.whtCode}
             onSave={handleFieldSave('whtCode')}
+            {...getFieldMetadata(wht?._metadata, 'whtCode')}
           />
           <EditableField
             label="WHT Rate (%)"
             value={wht?.whtRate}
             onSave={handleFieldSave('whtRate')}
+            {...getFieldMetadata(wht?._metadata, 'whtRate')}
           />
         </div>
 
@@ -112,21 +124,25 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             label="Taxpayer NPWP (Shopee)"
             value={wht?.taxpayerNpwp}
             onSave={handleFieldSave('taxpayerNpwp')}
+            {...getFieldMetadata(wht?._metadata, 'taxpayerNpwp')}
           />
           <EditableField
             label="Taxpayer Name (Shopee)"
             value={wht?.taxpayerName}
             onSave={handleFieldSave('taxpayerName')}
+            {...getFieldMetadata(wht?._metadata, 'taxpayerName')}
           />
           <EditableField
             label="Collector NPWP (Seller/Merchant)"
             value={wht?.collectorNpwp}
             onSave={handleFieldSave('collectorNpwp')}
+            {...getFieldMetadata(wht?._metadata, 'collectorNpwp')}
           />
           <EditableField
             label="Collector Name (Seller/Merchant)"
             value={wht?.collectorName}
             onSave={handleFieldSave('collectorName')}
+            {...getFieldMetadata(wht?._metadata, 'collectorName')}
           />
         </div>
 
@@ -138,18 +154,21 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             value={wht?.taxBase}
             isMoney
             onSave={handleFieldSave('taxBase')}
+            {...getFieldMetadata(wht?._metadata, 'taxBase')}
           />
           <EditableField
             label="WHT Amount (PPh23)"
             value={wht?.whtAmount}
             isMoney
             onSave={handleFieldSave('whtAmount')}
+            {...getFieldMetadata(wht?._metadata, 'whtAmount')}
           />
           <div className="col-span-2">
             <EditableField
               label="Referenced Invoice Number"
               value={wht?.referencedInvoiceNumber}
               onSave={handleFieldSave('referencedInvoiceNumber')}
+              {...getFieldMetadata(wht?._metadata, 'referencedInvoiceNumber')}
             />
           </div>
         </div>

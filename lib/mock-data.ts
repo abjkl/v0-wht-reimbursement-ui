@@ -24,7 +24,7 @@ export const mockRequests: WHTRequest[] = [
     docsComplete: { invoice: true, taxInvoice: true, whtSlip: true },
     extracted: {
       whtSlip: {
-        slipNumber: "BP-2301-000123",
+        whtSlipNumber: "BP-2301-000123",
         taxPeriod: "January 2026",
         taxpayerNpwp: "01.234.567.8-901.000",
         taxpayerName: "PT Mall Fashion Indonesia",
@@ -34,7 +34,19 @@ export const mockRequests: WHTRequest[] = [
         whtRate: 2,
         taxBase: 250000000,
         whtAmount: 5000000,
-        referencedInvoiceNumber: "010.000-26.00000123"
+        referencedInvoiceNumber: "010.000-26.00000123",
+        _metadata: {
+          taxpayerName: {
+            source: 'user',
+            updatedBy: 'reviewer@company.com',
+            updatedAt: '2026-02-20T09:15:00Z'
+          },
+          collectorNpwp: {
+            source: 'user',
+            updatedBy: 'admin@company.com',
+            updatedAt: '2026-02-20T10:30:00Z'
+          }
+        }
       },
       taxInvoice: {
         taxInvoiceNumber: "010.000-26.00000123",
@@ -45,7 +57,14 @@ export const mockRequests: WHTRequest[] = [
         buyerName: "PT Shopee Indonesia",
         dppTaxBase: 250000000,
         vatAmount: 27500000,
-        totalAmount: 277500000
+        totalAmount: 277500000,
+        _metadata: {
+          issuerName: {
+            source: 'user',
+            updatedBy: 'tax.admin@company.com',
+            updatedAt: '2026-02-20T11:00:00Z'
+          }
+        }
       },
       shopeeInvoice: {
         invoiceNumberOcr: "INV-MP-2026-0001",
