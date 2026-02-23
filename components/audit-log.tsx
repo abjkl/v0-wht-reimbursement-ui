@@ -2,11 +2,21 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { formatDate } from '@/lib/filter-utils';
 import type { AuditLogEntry } from '@/lib/types';
 
 interface AuditLogProps {
   entries: AuditLogEntry[];
+}
+
+function formatTimestamp(timestamp: string) {
+  const date = new Date(timestamp);
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+  
+  return `${day}/${month}/${year}, ${hours}.${minutes}`;
 }
 
 export function AuditLog({ entries }: AuditLogProps) {
@@ -23,7 +33,7 @@ export function AuditLog({ entries }: AuditLogProps) {
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{entry.action}</p>
                   <p className="text-xs text-muted-foreground">
-                    {new Date(entry.timestamp).toLocaleString('id-ID')}
+                    {formatTimestamp(entry.timestamp)}
                   </p>
                 </div>
                 <p className="text-xs text-muted-foreground">{entry.actor}</p>
