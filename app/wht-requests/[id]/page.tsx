@@ -144,7 +144,7 @@ export default function RequestDetailPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden pb-32">
         {/* Left Panel - Request Details */}
         <div className="w-2/5 space-y-4 overflow-auto border-r p-6">
           {/* Request Summary */}
@@ -296,40 +296,6 @@ export default function RequestDetailPage() {
           {/* AI Review */}
           <AIReviewPanel request={request} />
 
-          {/* Actions */}
-          {request.status !== 'Approved' && request.status !== 'Rejected' && (
-            <Card className="border-2">
-              <CardContent className="space-y-3 pt-6">
-                <Button
-                  className="w-full"
-                  onClick={handleAcceptAI}
-                  disabled={request.aiSuggestion === 'Pending Review'}
-                >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Accept AI Suggestion
-                </Button>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button variant="outline" onClick={() => setShowApproveDialog(true)}>
-                    Approve
-                  </Button>
-                  <Button variant="destructive" onClick={() => setShowRejectDialog(true)}>
-                    Reject
-                  </Button>
-                </div>
-                {nextRequest && (
-                  <Button
-                    variant="ghost"
-                    className="w-full"
-                    onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}
-                  >
-                    Next Request
-                    <ChevronRight className="ml-2 h-4 w-4" />
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          )}
-
           {/* Audit Log */}
           <AuditLog entries={request.auditLog} />
         </div>
@@ -339,6 +305,41 @@ export default function RequestDetailPage() {
           <DocumentViewer request={request} />
         </div>
       </div>
+
+      {/* Sticky Bottom Actions */}
+      {request.status !== 'Approved' && request.status !== 'Rejected' && (
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card shadow-lg">
+          <div className="mx-auto max-w-md space-y-3 p-6">
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={handleAcceptAI}
+              disabled={request.aiSuggestion === 'Pending Review'}
+            >
+              <CheckCircle className="mr-2 h-4 w-4" />
+              Accept AI Suggestion
+            </Button>
+            <div className="grid grid-cols-2 gap-3">
+              <Button variant="outline" size="lg" onClick={() => setShowApproveDialog(true)}>
+                Approve
+              </Button>
+              <Button variant="destructive" size="lg" onClick={() => setShowRejectDialog(true)}>
+                Reject
+              </Button>
+            </div>
+            {nextRequest && (
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}
+              >
+                Next Request
+                <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Approve Dialog */}
       <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
