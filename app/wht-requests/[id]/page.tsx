@@ -391,7 +391,7 @@ export default function RequestDetailPage() {
                     onClick={() => setShowManualDecision(!showManualDecision)}
                     className="text-sm text-muted-foreground hover:text-foreground hover:underline"
                   >
-                    Or decide manually {showManualDecision ? '▲' : '▼'}
+                    Or decide manually {showManualDecision ? '◀' : '▶'}
                   </button>
                 </>
               )}
