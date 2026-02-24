@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Pencil, Check, X, Sparkles, User } from 'lucide-react';
+import { Pencil, Check, X, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -17,7 +17,34 @@ interface EditableFieldProps {
   isMoney?: boolean;
   onSave: (value: string) => void;
   source?: 'ai' | 'user';
-  updatedBy?: string; // user email
+  updatedBy?: string;
+}
+
+function getInitials(email?: string): string {
+  if (!email) return '?';
+  const name = email.split('@')[0];
+  const parts = name.split(/[._-]/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
+function getAvatarColor(email?: string): string {
+  if (!email) return 'bg-muted-foreground';
+  const colors = [
+    'bg-orange-500',
+    'bg-teal-500',
+    'bg-violet-500',
+    'bg-rose-500',
+    'bg-sky-500',
+    'bg-emerald-500',
+  ];
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    hash = email.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
 }
 
 export function EditableField({ 
@@ -42,7 +69,7 @@ export function EditableField({
   };
 
   const formatValue = (val?: string | number) => {
-    if (val == null || val === '') return '—';
+    if (val == null || val === '') return '\u2014';
     if (isMoney) {
       const num = typeof val === 'string' ? parseFloat(val) : val;
       if (isNaN(num)) return val;
@@ -51,27 +78,40 @@ export function EditableField({
     return val;
   };
 
+  const SourceIndicator = () => (
+    <TooltipProvider delayDuration={150}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {source === 'ai' ? (
+            <span className="inline-flex items-center justify-center">
+              <Sparkles className="h-3 w-3 text-amber-500" />
+            </span>
+          ) : (
+            <span
+              className={`inline-flex items-center justify-center h-3.5 w-3.5 rounded-full text-white text-[7px] font-bold leading-none ${getAvatarColor(updatedBy)}`}
+            >
+              {getInitials(updatedBy)}
+            </span>
+          )}
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs px-2.5 py-1.5">
+          {source === 'ai' ? (
+            <span className="text-muted-foreground">AI parsed</span>
+          ) : (
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium">{updatedBy || 'Unknown'}</span>
+              <span className="text-muted-foreground">Manually updated</span>
+            </div>
+          )}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+
   return (
     <div>
       <div className="flex items-center gap-1.5 mb-1">
-        <TooltipProvider delayDuration={200}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center">
-                {source === 'ai' && (
-                  <Sparkles className="h-3 w-3 text-blue-500" />
-                )}
-                {source === 'user' && (
-                  <User className="h-3 w-3 text-purple-500" />
-                )}
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="top" className="text-xs">
-              {source === 'ai' && <p>AI 解析</p>}
-              {source === 'user' && <p>用户更新: {updatedBy || 'Unknown'}</p>}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <SourceIndicator />
         <label className="text-xs text-muted-foreground">{label}</label>
       </div>
       
