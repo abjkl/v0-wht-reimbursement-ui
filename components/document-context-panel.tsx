@@ -3,72 +3,12 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Pencil, Check, X } from 'lucide-react';
+import { EditableField } from '@/components/editable-field';
 import type { WHTRequest } from '@/lib/types';
 
 interface DocumentContextPanelProps {
   request: WHTRequest;
   activeTab: string;
-}
-
-interface EditableFieldProps {
-  label: string;
-  value?: string | number;
-  isMoney?: boolean;
-  onSave: (value: string) => void;
-}
-
-function EditableField({ label, value, isMoney, onSave }: EditableFieldProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editValue, setEditValue] = useState(String(value || ''));
-
-  const handleSave = () => {
-    onSave(editValue);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setEditValue(String(value || ''));
-    setIsEditing(false);
-  };
-
-  const displayValue = isMoney && value ? `Rp ${Number(value).toLocaleString()}` : value || '-';
-
-  return (
-    <div className="space-y-1">
-      <div className="text-xs text-muted-foreground">{label}</div>
-      {isEditing ? (
-        <div className="flex items-center gap-2">
-          <Input
-            value={editValue}
-            onChange={(e) => setEditValue(e.target.value)}
-            className="h-8 text-sm"
-            autoFocus
-          />
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleSave}>
-            <Check className="h-3.5 w-3.5 text-green-600" />
-          </Button>
-          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleCancel}>
-            <X className="h-3.5 w-3.5 text-destructive" />
-          </Button>
-        </div>
-      ) : (
-        <div className="group flex items-center gap-2">
-          <span className="text-sm font-medium">{displayValue}</span>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-6 w-6 opacity-0 group-hover:opacity-100"
-            onClick={() => setIsEditing(true)}
-          >
-            <Pencil className="h-3 w-3" />
-          </Button>
-        </div>
-      )}
-    </div>
-  );
 }
 
 export function DocumentContextPanel({ request, activeTab }: DocumentContextPanelProps) {
@@ -178,6 +118,7 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
 
   const renderTaxInvoiceFields = () => {
     const tax = request.extracted?.taxInvoice;
+    const m = tax?._metadata;
     
     return (
       <div className="space-y-6">
@@ -186,11 +127,13 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             label="Tax Invoice Number"
             value={tax?.taxInvoiceNumber}
             onSave={handleFieldSave('taxInvoiceNumber')}
+            {...getFieldMetadata(m, 'taxInvoiceNumber')}
           />
           <EditableField
             label="Tax Invoice Date"
             value={tax?.taxInvoiceDate}
             onSave={handleFieldSave('taxInvoiceDate')}
+            {...getFieldMetadata(m, 'taxInvoiceDate')}
           />
         </div>
 
@@ -201,11 +144,13 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             label="Issuer NPWP"
             value={tax?.issuerNpwp}
             onSave={handleFieldSave('issuerNpwp')}
+            {...getFieldMetadata(m, 'issuerNpwp')}
           />
           <EditableField
             label="Issuer Name"
             value={tax?.issuerName}
             onSave={handleFieldSave('issuerName')}
+            {...getFieldMetadata(m, 'issuerName')}
           />
         </div>
 
@@ -216,11 +161,13 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             label="Buyer NPWP"
             value={tax?.buyerNpwp}
             onSave={handleFieldSave('buyerNpwp')}
+            {...getFieldMetadata(m, 'buyerNpwp')}
           />
           <EditableField
             label="Buyer Name"
             value={tax?.buyerName}
             onSave={handleFieldSave('buyerName')}
+            {...getFieldMetadata(m, 'buyerName')}
           />
         </div>
 
@@ -232,12 +179,14 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             value={tax?.dppTaxBase}
             isMoney
             onSave={handleFieldSave('dppTaxBase')}
+            {...getFieldMetadata(m, 'dppTaxBase')}
           />
           <EditableField
             label="VAT Amount (PPN)"
             value={tax?.vatAmount}
             isMoney
             onSave={handleFieldSave('vatAmount')}
+            {...getFieldMetadata(m, 'vatAmount')}
           />
           <div className="col-span-2">
             <EditableField
@@ -245,6 +194,7 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               value={tax?.totalAmount}
               isMoney
               onSave={handleFieldSave('totalAmount')}
+              {...getFieldMetadata(m, 'totalAmount')}
             />
           </div>
         </div>
@@ -254,6 +204,7 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
 
   const renderShopeeInvoiceFields = () => {
     const invoice = request.extracted?.shopeeInvoice;
+    const m = invoice?._metadata;
     
     return (
       <div className="space-y-6">
@@ -262,21 +213,25 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             label="Invoice Number (OCR)"
             value={invoice?.invoiceNumberOcr}
             onSave={handleFieldSave('invoiceNumberOcr')}
+            {...getFieldMetadata(m, 'invoiceNumberOcr')}
           />
           <EditableField
             label="Invoice Date"
             value={invoice?.invoiceDate}
             onSave={handleFieldSave('invoiceDate')}
+            {...getFieldMetadata(m, 'invoiceDate')}
           />
           <EditableField
             label="Issuer Name"
             value={invoice?.issuerName}
             onSave={handleFieldSave('issuerName')}
+            {...getFieldMetadata(m, 'issuerName')}
           />
           <EditableField
             label="Issuer NPWP"
             value={invoice?.issuerNpwp}
             onSave={handleFieldSave('issuerNpwp')}
+            {...getFieldMetadata(m, 'issuerNpwp')}
           />
         </div>
 
@@ -288,22 +243,26 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
             value={invoice?.amountBeforeTax}
             isMoney
             onSave={handleFieldSave('amountBeforeTax')}
+            {...getFieldMetadata(m, 'amountBeforeTax')}
           />
           <EditableField
             label="Total Amount"
             value={invoice?.totalAmount}
             isMoney
             onSave={handleFieldSave('totalAmount')}
+            {...getFieldMetadata(m, 'totalAmount')}
           />
           <EditableField
             label="Currency"
             value={invoice?.currency}
             onSave={handleFieldSave('currency')}
+            {...getFieldMetadata(m, 'currency')}
           />
           <EditableField
             label="Line Item Count"
             value={invoice?.lineItemCount}
             onSave={handleFieldSave('lineItemCount')}
+            {...getFieldMetadata(m, 'lineItemCount')}
           />
         </div>
 
@@ -314,6 +273,7 @@ export function DocumentContextPanel({ request, activeTab }: DocumentContextPane
               label="Invoice Description"
               value={invoice.description}
               onSave={handleFieldSave('description')}
+              {...getFieldMetadata(m, 'description')}
             />
           </>
         )}
