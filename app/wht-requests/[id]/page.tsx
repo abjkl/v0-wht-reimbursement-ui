@@ -5,14 +5,12 @@ import { useState } from 'react';
 import { useStore } from '@/lib/store';
 import { DocumentViewer } from '@/components/document-viewer';
 import { DocumentContextPanel } from '@/components/document-context-panel';
+import { AIReviewDrawer } from '@/components/ai-review-drawer';
 import { AuditLog } from '@/components/audit-log';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, CheckCircle, XCircle, ChevronRight, CheckCircle2, AlertCircle, RefreshCw } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, ChevronRight, Bot } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
   Dialog,
@@ -35,8 +33,7 @@ export default function RequestDetailPage() {
   const [rejectionReasons, setRejectionReasons] = useState<string[]>([]);
   const [showManualDecision, setShowManualDecision] = useState(false);
   const [activeDocTab, setActiveDocTab] = useState('wht-slip');
-  const [showAllValidationChecks, setShowAllValidationChecks] = useState(false);
-  const [isRerunningAI, setIsRerunningAI] = useState(false);
+  const [showAIDrawer, setShowAIDrawer] = useState(true);
 
   const request = requests.find(r => r.id === params.id);
 
@@ -275,14 +272,6 @@ export default function RequestDetailPage() {
   const warnChecks = validationChecks.filter(c => c.status === 'warn').length;
   const failedChecks = validationChecks.filter(c => c.status === 'fail').length;
 
-  const handleRerunAI = async () => {
-    setIsRerunningAI(true);
-    console.log('[v0] Rerunning AI validation checks...');
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsRerunningAI(false);
-    console.log('[v0] AI validation completed');
-  };
-
   const handleApprove = () => {
     updateRequest(request.id, {
       status: 'Approved',
@@ -372,7 +361,7 @@ export default function RequestDetailPage() {
               {request.status}
             </Badge>
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <Button 
               variant="outline" 
               size="sm"
@@ -380,123 +369,45 @@ export default function RequestDetailPage() {
             >
               Attachments
             </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* AI Review Suggestion Bar */}
-      <div className="border-b bg-card">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">AI Suggestion:</span>
-              <Badge 
-                variant={
-                  request.aiSuggestion === 'Approve' 
-                    ? 'default' 
-                    : request.aiSuggestion === 'Reject' 
-                    ? 'destructive' 
-                    : 'secondary'
-                }
-                className="text-sm font-medium"
-              >
-                {request.aiSuggestion}
-              </Badge>
-            </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant={showAIDrawer ? 'default' : 'outline'}
               size="sm"
-              onClick={handleRerunAI}
-              disabled={isRerunningAI}
+              onClick={() => setShowAIDrawer(!showAIDrawer)}
               className="gap-2"
             >
-              <RefreshCw className={`h-3.5 w-3.5 ${isRerunningAI ? 'animate-spin' : ''}`} />
-              {isRerunningAI ? '重新运行中...' : '重新运行 AI'}
+              <Bot className="h-4 w-4" />
+              AI Review
             </Button>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Confidence:</span>
-              <span className="text-sm font-semibold">{Math.round(request.aiConfidence * 100)}%</span>
-              <Progress value={request.aiConfidence * 100} className="h-2 w-32" />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Documents:</span>
-              <span className="text-sm font-medium">
-                {Object.values(request.docsComplete).filter(Boolean).length}/3
-              </span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">Validation Checks:</span>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-green-600 font-medium">{passedChecks} Passed</span>
-                <span className="text-xs text-muted-foreground">·</span>
-                <span className="text-xs text-yellow-600 font-medium">{warnChecks} Warnings</span>
-                <span className="text-xs text-muted-foreground">·</span>
-                <span className="text-xs text-destructive font-medium">{failedChecks} Failed</span>
-                <button
-                  onClick={() => setShowAllValidationChecks(!showAllValidationChecks)}
-                  className="ml-2 text-xs text-primary hover:underline"
-                >
-                  {showAllValidationChecks ? 'Hide details' : 'Show details'}
-                </button>
-              </div>
-            </div>
           </div>
         </div>
-        
-        {/* Expanded Validation Checks */}
-        {showAllValidationChecks && (
-          <div className="px-6 py-3 border-t bg-muted/20">
-            <div className="max-h-[280px] overflow-auto">
-              <div className="grid grid-cols-3 gap-4">
-                {Object.entries(
-                  validationChecks.reduce((acc, check) => {
-                    if (!acc[check.section]) acc[check.section] = [];
-                    acc[check.section].push(check);
-                    return acc;
-                  }, {} as Record<string, ValidationCheck[]>)
-                ).map(([section, checks]) => (
-                  <div key={section} className="space-y-1.5">
-                    <h4 className="text-xs font-semibold text-foreground mb-1.5">{section}</h4>
-                    {checks.map((check, idx) => (
-                      <div 
-                        key={idx}
-                        className="flex items-center gap-1.5 text-[11px]"
-                      >
-                        {check.status === 'pass' && (
-                          <CheckCircle2 className="h-3 w-3 text-green-600 flex-shrink-0" />
-                        )}
-                        {check.status === 'warn' && (
-                          <AlertCircle className="h-3 w-3 text-yellow-600 flex-shrink-0" />
-                        )}
-                        {check.status === 'fail' && (
-                          <XCircle className="h-3 w-3 text-destructive flex-shrink-0" />
-                        )}
-                        <span className="font-medium truncate" title={check.label}>{check.label}</span>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden bg-background">
         {/* Left Panel - Document Viewer */}
-        <div className="w-1/2 border-r p-6">
+        <div className="flex-1 min-w-0 border-r p-6">
           <DocumentViewer request={request} onTabChange={setActiveDocTab} />
         </div>
 
-        {/* Right Panel - Parsed Fields & Details */}
-        <div className="flex-1 space-y-4 overflow-auto bg-background p-6 pb-32">
+        {/* Middle Panel - Parsed Fields & Details */}
+        <div className="flex-1 min-w-0 space-y-4 overflow-auto bg-background p-6 pb-32">
           {/* Document Context Panel - Changes based on active tab */}
           <DocumentContextPanel request={request} activeTab={activeDocTab} />
 
           {/* Audit Log */}
           <AuditLog entries={request.auditLog} />
         </div>
+
+        {/* Right Drawer - AI Review */}
+        <AIReviewDrawer
+          request={request}
+          validationChecks={validationChecks}
+          passedChecks={passedChecks}
+          warnChecks={warnChecks}
+          failedChecks={failedChecks}
+          open={showAIDrawer}
+          onClose={() => setShowAIDrawer(false)}
+        />
       </div>
 
       {/* Sticky Bottom Actions */}
