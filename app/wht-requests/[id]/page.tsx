@@ -10,7 +10,7 @@ import { AuditLog } from '@/components/audit-log';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, CheckCircle, XCircle, ChevronRight, Bot } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, ChevronRight, Sparkles, PanelRight } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
   Dialog,
@@ -375,7 +375,7 @@ export default function RequestDetailPage() {
               onClick={() => setShowAIDrawer(!showAIDrawer)}
               className="gap-2"
             >
-              <Bot className="h-4 w-4" />
+              <Sparkles className="h-3.5 w-3.5" />
               AI Review
             </Button>
           </div>
@@ -407,6 +407,8 @@ export default function RequestDetailPage() {
           failedChecks={failedChecks}
           open={showAIDrawer}
           onClose={() => setShowAIDrawer(false)}
+          onApprove={handleApprove}
+          onReject={() => setShowManualDecision(true)}
         />
       </div>
 

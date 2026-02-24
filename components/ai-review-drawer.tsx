@@ -4,16 +4,17 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
 import {
   CheckCircle2,
   AlertCircle,
   XCircle,
   RefreshCw,
-  Bot,
-  X,
+  Sparkles,
   ChevronDown,
   ChevronRight,
+  PanelRightClose,
+  Check,
+  X,
 } from 'lucide-react';
 import type { WHTRequest } from '@/lib/types';
 
@@ -34,6 +35,8 @@ interface AIReviewDrawerProps {
   failedChecks: number;
   open: boolean;
   onClose: () => void;
+  onApprove: () => void;
+  onReject: () => void;
 }
 
 export function AIReviewDrawer({
@@ -44,6 +47,8 @@ export function AIReviewDrawer({
   failedChecks,
   open,
   onClose,
+  onApprove,
+  onReject,
 }: AIReviewDrawerProps) {
   const [isRerunning, setIsRerunning] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -69,8 +74,7 @@ export function AIReviewDrawer({
     return acc;
   }, {} as Record<string, ValidationCheck[]>);
 
-  const getSectionSummary = (checks: ValidationCheck[]) => {
-    const p = checks.filter(c => c.status === 'pass').length;
+  const getSectionStatus = (checks: ValidationCheck[]) => {
     const f = checks.filter(c => c.status === 'fail').length;
     const w = checks.filter(c => c.status === 'warn').length;
     if (f > 0) return 'fail';
@@ -78,120 +82,135 @@ export function AIReviewDrawer({
     return 'pass';
   };
 
-  const suggestionMap: Record<string, { label: string; color: string }> = {
-    Approve: { label: 'Accept', color: 'bg-green-600 text-white' },
-    Reject: { label: 'Reject', color: 'bg-destructive text-white' },
-    'Pending Review': { label: 'Pending Review', color: 'bg-yellow-500 text-white' },
+  const getSectionBadge = (checks: ValidationCheck[]) => {
+    const status = getSectionStatus(checks);
+    const f = checks.filter(c => c.status === 'fail').length;
+    const w = checks.filter(c => c.status === 'warn').length;
+    if (status === 'fail') {
+      return (
+        <span className="rounded-full border border-red-200 bg-red-50 px-2 py-0.5 text-[10px] font-medium text-red-700">
+          {f} Failed
+        </span>
+      );
+    }
+    if (status === 'warn') {
+      return (
+        <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+          {w} Warning{w > 1 ? 's' : ''}
+        </span>
+      );
+    }
+    return (
+      <span className="rounded-full border border-green-200 bg-green-50 px-2 py-0.5 text-[10px] font-medium text-green-700">
+        All Passed
+      </span>
+    );
   };
-
-  const suggestion = suggestionMap[request.aiSuggestion] || suggestionMap['Pending Review'];
 
   if (!open) return null;
 
   return (
-    <div className="flex h-full w-[340px] flex-shrink-0 flex-col border-l bg-card">
+    <div className="flex h-full w-[360px] flex-shrink-0 flex-col border-l bg-card">
       {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-            <Bot className="h-4 w-4 text-primary" />
+      <div className="border-b px-5 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600">
+              <Sparkles className="h-4.5 w-4.5 text-white" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold leading-tight">AI Assistant</h3>
+              <p className="text-[11px] text-muted-foreground">WHT Slip Review</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-sm font-semibold leading-none">WHT Slip Review</h3>
-            <p className="mt-0.5 text-[10px] text-muted-foreground">AI Agent</p>
-          </div>
+          <button
+            onClick={onClose}
+            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            <PanelRightClose className="h-4 w-4" />
+          </button>
         </div>
-        <button
-          onClick={onClose}
-          className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
-        >
-          <X className="h-4 w-4" />
-        </button>
       </div>
 
-      {/* Scrollable content */}
+      {/* Scrollable Content */}
       <div className="flex-1 overflow-auto">
-        {/* AI Suggestion */}
-        <div className="px-4 py-4">
-          <p className="mb-2 text-xs font-medium text-muted-foreground">AI Suggestion</p>
-          <Badge className={`${suggestion.color} text-sm px-3 py-1`}>
-            {suggestion.label}
-          </Badge>
-        </div>
-
-        <Separator />
-
-        {/* Confidence */}
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-medium text-muted-foreground">Confidence</p>
-            <span className="text-sm font-bold">{confidence}%</span>
-          </div>
-          <Progress value={confidence} className="h-2" />
-        </div>
-
-        <Separator />
-
-        {/* Validation Summary */}
-        <div className="px-4 py-4">
-          <p className="mb-3 text-xs font-medium text-muted-foreground">Validation Checks</p>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />
-              <span className="text-xs font-medium">{passedChecks}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <AlertCircle className="h-3.5 w-3.5 text-yellow-600" />
-              <span className="text-xs font-medium">{warnChecks}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <XCircle className="h-3.5 w-3.5 text-destructive" />
-              <span className="text-xs font-medium">{failedChecks}</span>
-            </div>
-            <span className="text-[10px] text-muted-foreground">
-              of {validationChecks.length} checks
+        {/* Validation Checks Section */}
+        <div className="px-5 pt-5 pb-2">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Validation Checks
             </span>
+            <div className="flex items-center gap-2 text-[11px]">
+              <span className="flex items-center gap-0.5 text-green-600 font-medium">
+                <CheckCircle2 className="h-3 w-3" />
+                {passedChecks}
+              </span>
+              <span className="flex items-center gap-0.5 text-amber-600 font-medium">
+                <AlertCircle className="h-3 w-3" />
+                {warnChecks}
+              </span>
+              <span className="flex items-center gap-0.5 text-red-600 font-medium">
+                <XCircle className="h-3 w-3" />
+                {failedChecks}
+              </span>
+            </div>
           </div>
 
-          {/* Check Sections - Accordion */}
-          <div className="space-y-1">
+          {/* Section Accordion Cards */}
+          <div className="space-y-2">
             {Object.entries(grouped).map(([section, checks]) => {
-              const status = getSectionSummary(checks);
               const isExpanded = expandedSections[section] ?? false;
+              const sectionStatus = getSectionStatus(checks);
+              const borderColor =
+                sectionStatus === 'fail'
+                  ? 'border-red-200'
+                  : sectionStatus === 'warn'
+                  ? 'border-amber-200'
+                  : 'border-green-200';
 
               return (
-                <div key={section} className="rounded-md border">
+                <div
+                  key={section}
+                  className={`rounded-lg border ${borderColor} overflow-hidden`}
+                >
                   <button
                     onClick={() => toggleSection(section)}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-left hover:bg-muted/50"
+                    className="flex w-full items-center gap-2 px-3 py-2.5 text-left transition-colors hover:bg-muted/30"
                   >
-                    {status === 'pass' && <CheckCircle2 className="h-3.5 w-3.5 text-green-600 flex-shrink-0" />}
-                    {status === 'warn' && <AlertCircle className="h-3.5 w-3.5 text-yellow-600 flex-shrink-0" />}
-                    {status === 'fail' && <XCircle className="h-3.5 w-3.5 text-destructive flex-shrink-0" />}
-                    <span className="flex-1 text-xs font-medium">{section}</span>
-                    <span className="text-[10px] text-muted-foreground mr-1">
-                      {checks.filter(c => c.status === 'pass').length}/{checks.length}
-                    </span>
                     {isExpanded ? (
-                      <ChevronDown className="h-3 w-3 text-muted-foreground" />
+                      <ChevronDown className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                     ) : (
-                      <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                      <ChevronRight className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                     )}
+                    <span className="flex-1 text-xs font-semibold">{section}</span>
+                    {getSectionBadge(checks)}
                   </button>
 
                   {isExpanded && (
-                    <div className="border-t px-3 py-2 space-y-1.5 bg-muted/20">
+                    <div className="border-t border-dashed px-3 py-2.5 space-y-2 bg-muted/10">
                       {checks.map((check, idx) => (
-                        <div key={idx} className="flex items-start gap-2">
-                          <div className="mt-0.5">
-                            {check.status === 'pass' && <CheckCircle2 className="h-3 w-3 text-green-600" />}
-                            {check.status === 'warn' && <AlertCircle className="h-3 w-3 text-yellow-600" />}
-                            {check.status === 'fail' && <XCircle className="h-3 w-3 text-destructive" />}
+                        <div
+                          key={idx}
+                          className={`flex items-start gap-2 rounded-md px-2.5 py-2 text-[11px] ${
+                            check.status === 'fail'
+                              ? 'bg-red-50 border border-red-100'
+                              : check.status === 'warn'
+                              ? 'bg-amber-50 border border-amber-100'
+                              : ''
+                          }`}
+                        >
+                          <div className="mt-0.5 flex-shrink-0">
+                            {check.status === 'pass' && <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />}
+                            {check.status === 'warn' && <AlertCircle className="h-3.5 w-3.5 text-amber-600" />}
+                            {check.status === 'fail' && <XCircle className="h-3.5 w-3.5 text-red-600" />}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[11px] font-medium leading-tight">{check.label}</p>
+                            <p className="font-medium leading-tight">{check.label}</p>
+                            <p className="text-[10px] text-muted-foreground leading-snug mt-0.5">{check.helper}</p>
                             {check.reason && (
-                              <p className="text-[10px] text-destructive leading-tight mt-0.5">{check.reason}</p>
+                              <p className="text-[10px] leading-snug mt-1 font-medium text-red-700">
+                                {check.reason}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -203,20 +222,92 @@ export function AIReviewDrawer({
             })}
           </div>
         </div>
+
+        {/* Re-run Button */}
+        <div className="px-5 py-3">
+          <button
+            onClick={handleRerun}
+            disabled={isRerunning}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground disabled:opacity-50 transition-colors"
+          >
+            <RefreshCw className={`h-3 w-3 ${isRerunning ? 'animate-spin' : ''}`} />
+            {isRerunning ? 'Running...' : 'Re-run checks'}
+          </button>
+        </div>
+
+        {/* Final AI Decision */}
+        <div className="mx-5 mb-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-4 w-4 text-blue-600" />
+            <span className="text-xs font-semibold">Final AI Decision</span>
+          </div>
+          <div
+            className={`rounded-lg border p-4 ${
+              request.aiSuggestion === 'Approve'
+                ? 'border-green-200 bg-green-50'
+                : request.aiSuggestion === 'Reject'
+                ? 'border-red-200 bg-red-50'
+                : 'border-amber-200 bg-amber-50'
+            }`}
+          >
+            <div className="flex items-center gap-2 mb-1.5">
+              {request.aiSuggestion === 'Approve' && (
+                <CheckCircle2 className="h-4 w-4 text-green-600" />
+              )}
+              {request.aiSuggestion === 'Reject' && (
+                <XCircle className="h-4 w-4 text-red-600" />
+              )}
+              {request.aiSuggestion === 'Review' && (
+                <AlertCircle className="h-4 w-4 text-amber-600" />
+              )}
+              <span
+                className={`text-sm font-bold ${
+                  request.aiSuggestion === 'Approve'
+                    ? 'text-green-800'
+                    : request.aiSuggestion === 'Reject'
+                    ? 'text-red-800'
+                    : 'text-amber-800'
+                }`}
+              >
+                {request.aiSuggestion === 'Approve'
+                  ? 'Approve'
+                  : request.aiSuggestion === 'Reject'
+                  ? 'Reject to Requestor'
+                  : 'Pending Review'}
+              </span>
+            </div>
+
+            {/* Confidence bar */}
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[10px] text-muted-foreground w-16">Confidence</span>
+              <Progress value={confidence} className="h-1.5 flex-1" />
+              <span className="text-[11px] font-bold w-8 text-right">{confidence}%</span>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Footer - Rerun */}
-      <div className="border-t px-4 py-3">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRerun}
-          disabled={isRerunning}
-          className="w-full gap-2"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${isRerunning ? 'animate-spin' : ''}`} />
-          {isRerunning ? 'Running...' : 'Re-run Agent'}
-        </Button>
+      {/* Footer - Actions */}
+      <div className="border-t px-5 py-4 space-y-2">
+        <div className="grid grid-cols-2 gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onReject}
+            className="gap-1.5 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
+          >
+            <X className="h-3.5 w-3.5" />
+            Reject
+          </Button>
+          <Button
+            size="sm"
+            onClick={onApprove}
+            className="gap-1.5 bg-green-600 hover:bg-green-700 text-white"
+          >
+            <Check className="h-3.5 w-3.5" />
+            Accept
+          </Button>
+        </div>
       </div>
     </div>
   );
