@@ -10,7 +10,7 @@ import { AuditLog } from '@/components/audit-log';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, CheckCircle, XCircle, ChevronRight, Sparkles, PanelRight } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, ChevronRight, Sparkles } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
   Dialog,

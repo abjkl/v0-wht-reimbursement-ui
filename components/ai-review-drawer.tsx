@@ -219,7 +219,7 @@ function AgentCard({
           {/* Part 3: User Action */}
           {accepted === null && (
             <div className="border-t px-4 py-3">
-              {conclusion === 'Pending Review' ? (
+              {conclusion === 'Review' ? (
                 <button
                   onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
                   className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 hover:bg-amber-100 transition-colors"

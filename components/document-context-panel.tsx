@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { EditableField } from '@/components/editable-field';
