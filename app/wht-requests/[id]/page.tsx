@@ -370,29 +370,19 @@ export default function RequestDetailPage() {
 
   return (
     <div className="flex h-screen flex-col bg-background">
-      {/* Breadcrumb */}
-      <div className="border-b bg-background px-6 py-3">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <button
-            onClick={() => router.push('/wht-requests')}
-            className="flex items-center gap-1 hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </button>
-          <span>{'>'}</span>
-          <span>WHT Requests</span>
-          <span>{'>'}</span>
-          <span className="text-foreground">WHT Request Detail</span>
-        </div>
-      </div>
-
-      {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
+      {/* Header Bar */}
+      <div className="border-b bg-background px-6 py-2.5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl font-semibold">WHT Request</h1>
-            <span className="font-medium">{request.id}</span>
+          <div className="flex items-center gap-3 text-sm">
+            <button
+              onClick={() => router.push('/wht-requests')}
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </button>
+            <span className="text-muted-foreground/40">{'/'}</span>
+            <span className="font-medium text-foreground">{request.id}</span>
             <Badge variant="secondary" className="text-xs">
               {request.status}
             </Badge>
