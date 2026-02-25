@@ -78,35 +78,43 @@ export function EditableField({
     return val;
   };
 
-  const SourceIndicator = () => (
-    <TooltipProvider delayDuration={150}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {source === 'ai' ? (
-            <span className="inline-flex items-center justify-center">
+  const SourceIndicator = () => {
+    if (source === 'user') {
+      return (
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span
+                className={`inline-flex items-center justify-center h-3.5 w-3.5 rounded-full text-white text-[7px] font-bold leading-none cursor-default ${getAvatarColor(updatedBy)}`}
+              >
+                {getInitials(updatedBy)}
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs px-2.5 py-1.5">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-medium">{updatedBy || 'Unknown'}</span>
+                <span className="text-muted-foreground">Manually updated</span>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    return (
+      <TooltipProvider delayDuration={150}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="inline-flex items-center justify-center cursor-default">
               <Sparkles className="h-3 w-3 text-amber-500" />
             </span>
-          ) : (
-            <span
-              className={`inline-flex items-center justify-center h-3.5 w-3.5 rounded-full text-white text-[7px] font-bold leading-none ${getAvatarColor(updatedBy)}`}
-            >
-              {getInitials(updatedBy)}
-            </span>
-          )}
-        </TooltipTrigger>
-        <TooltipContent side="top" className="text-xs px-2.5 py-1.5">
-          {source === 'ai' ? (
+          </TooltipTrigger>
+          <TooltipContent side="top" className="text-xs px-2.5 py-1.5">
             <span className="text-muted-foreground">AI parsed</span>
-          ) : (
-            <div className="flex flex-col gap-0.5">
-              <span className="font-medium">{updatedBy || 'Unknown'}</span>
-              <span className="text-muted-foreground">Manually updated</span>
-            </div>
-          )}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  );
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
 
   return (
     <div>
