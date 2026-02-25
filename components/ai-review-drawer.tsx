@@ -219,22 +219,32 @@ function AgentCard({
           {/* Part 3: User Action */}
           {accepted === null && (
             <div className="border-t px-4 py-3">
-              <div className="grid grid-cols-2 gap-2">
+              {conclusion === 'Pending Review' ? (
                 <button
-                  onClick={(e) => { e.stopPropagation(); onNotAccept(); }}
-                  className="flex items-center justify-center gap-1.5 rounded-lg border border-muted-foreground/20 px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 hover:bg-amber-100 transition-colors"
                 >
-                  <X className="h-3.5 w-3.5" />
-                  Not Accept
+                  <AlertCircle className="h-3.5 w-3.5" />
+                  Check Details
                 </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onAccept(); }}
-                  className="flex items-center justify-center gap-1.5 rounded-lg bg-foreground px-3 py-2 text-xs font-medium text-background hover:bg-foreground/90 transition-colors"
-                >
-                  <Check className="h-3.5 w-3.5" />
-                  Accept
-                </button>
-              </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onNotAccept(); }}
+                    className="flex items-center justify-center gap-1.5 rounded-lg border border-muted-foreground/20 px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    Not Accept
+                  </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onAccept(); }}
+                    className="flex items-center justify-center gap-1.5 rounded-lg bg-foreground px-3 py-2 text-xs font-medium text-background hover:bg-foreground/90 transition-colors"
+                  >
+                    <Check className="h-3.5 w-3.5" />
+                    Accept
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
