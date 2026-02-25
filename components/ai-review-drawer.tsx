@@ -121,9 +121,11 @@ function AgentCard({
           <Circle className="h-5 w-5 text-muted-foreground/40 flex-shrink-0" />
         )}
         <span className="flex-1 text-sm font-semibold">{name}</span>
-        {/* Conclusion badge */}
-        <span className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.border} ${cfg.text}`}>
+        {/* Conclusion badge with confidence */}
+        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.border} ${cfg.text}`}>
+          <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
           {conclusion === 'Approve' ? 'Approve' : conclusion === 'Reject' ? 'Need Modify' : 'Pending'}
+          <span className="text-[9px] font-medium opacity-70">{confidence}%</span>
         </span>
         {expanded ? (
           <ChevronDown className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
@@ -134,17 +136,6 @@ function AgentCard({
 
       {expanded && (
         <div className="border-t">
-          {/* Part 1: Conclusion */}
-          <div className="px-4 pt-3 pb-2">
-            <div className={`rounded-lg border p-3 ${cfg.bg} ${cfg.border}`}>
-              <div className="flex items-center gap-2">
-                <span className={`h-2 w-2 rounded-full ${cfg.dot}`} />
-                <span className={`text-xs font-bold ${cfg.text}`}>{cfg.label}</span>
-                <span className="ml-auto text-[11px] font-bold tabular-nums text-muted-foreground">{confidence}%</span>
-              </div>
-            </div>
-          </div>
-
           {/* Re-run */}
           <div className="flex justify-end px-4 pb-1">
             <button
