@@ -140,11 +140,7 @@ function AgentCard({
               <div className="flex items-center gap-2">
                 <span className={`h-2 w-2 rounded-full ${cfg.dot}`} />
                 <span className={`text-xs font-bold ${cfg.text}`}>{cfg.label}</span>
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-[10px] text-muted-foreground">Confidence</span>
-                <Progress value={confidence} className="h-1.5 flex-1" />
-                <span className="text-[11px] font-bold tabular-nums">{confidence}%</span>
+                <span className="ml-auto text-[11px] font-bold tabular-nums text-muted-foreground">{confidence}%</span>
               </div>
             </div>
           </div>
