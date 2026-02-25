@@ -6,7 +6,7 @@ import { useStore } from '@/lib/store';
 import { DocumentViewer } from '@/components/document-viewer';
 import { DocumentContextPanel } from '@/components/document-context-panel';
 import { AIReviewDrawer } from '@/components/ai-review-drawer';
-import { AuditLog } from '@/components/audit-log';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -429,9 +429,6 @@ export default function RequestDetailPage() {
         <div className="flex-1 min-w-0 space-y-4 overflow-auto bg-background p-6 pb-32">
           {/* Document Context Panel - Changes based on active tab */}
           <DocumentContextPanel request={request} activeTab={activeDocTab} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
-
-          {/* Audit Log */}
-          <AuditLog entries={request.auditLog} />
         </div>
 
         {/* Right Drawer - AI Review */}
