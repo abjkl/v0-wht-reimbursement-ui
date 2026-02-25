@@ -101,8 +101,15 @@ function AgentCard({
       text: 'text-amber-800',
       dot: 'bg-amber-500',
     },
+    'Pending Review': {
+      label: 'Pending Review',
+      bg: 'bg-amber-50',
+      border: 'border-amber-200',
+      text: 'text-amber-800',
+      dot: 'bg-amber-500',
+    },
   };
-  const cfg = conclusionConfig[conclusion];
+  const cfg = conclusionConfig[conclusion] || conclusionConfig.Review;
 
   return (
     <div className="rounded-xl border bg-card overflow-hidden">
@@ -123,7 +130,7 @@ function AgentCard({
         {/* Conclusion badge with confidence */}
         <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${cfg.bg} ${cfg.border} ${cfg.text}`}>
           <span className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`} />
-          {conclusion === 'Approve' ? 'Approve' : conclusion === 'Reject' ? 'Need Modify' : 'Pending'}
+          {conclusion === 'Approve' ? 'Approve' : conclusion === 'Reject' ? 'Reject' : 'Pending'}
           <span className="text-[9px] font-medium opacity-70">{confidence}%</span>
         </span>
         {expanded ? (
@@ -218,7 +225,7 @@ function AgentCard({
           {/* Part 3: User Action */}
           {accepted === null && (
             <div className="border-t px-4 py-3">
-              {conclusion === 'Review' ? (
+              {(conclusion === 'Review' || conclusion === 'Pending Review') ? (
                 <button
                   onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
                   className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 hover:bg-amber-100 transition-colors"
