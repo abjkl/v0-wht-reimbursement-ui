@@ -36,6 +36,7 @@ interface AIReviewDrawerProps {
   onClose: () => void;
   onApprove: () => void;
   onReject: () => void;
+  onCheckDetails?: () => void;
 }
 
 // --- Agent Card Component ---
@@ -52,6 +53,7 @@ function AgentCard({
   onNotAccept,
   onRerun,
   isRerunning,
+  onCheckDetails,
 }: {
   name: string;
   conclusion: 'Approve' | 'Reject' | 'Review';
@@ -65,6 +67,7 @@ function AgentCard({
   onNotAccept: () => void;
   onRerun: () => void;
   isRerunning: boolean;
+  onCheckDetails?: () => void;
 }) {
   const [expanded, setExpanded] = useState(true);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -227,7 +230,7 @@ function AgentCard({
             <div className="border-t px-4 py-3">
               {(conclusion === 'Review' || conclusion === 'Pending Review') ? (
                 <button
-                  onClick={(e) => { e.stopPropagation(); setExpanded(true); }}
+                  onClick={(e) => { e.stopPropagation(); setExpanded(true); onCheckDetails?.(); }}
                   className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 hover:bg-amber-100 transition-colors"
                 >
                   <AlertCircle className="h-3.5 w-3.5" />
@@ -282,6 +285,7 @@ export function AIReviewDrawer({
   onClose,
   onApprove,
   onReject,
+  onCheckDetails,
 }: AIReviewDrawerProps) {
   const [isRerunning, setIsRerunning] = useState(false);
   const [agentAccepted, setAgentAccepted] = useState<boolean | null>(null);
@@ -346,6 +350,7 @@ export function AIReviewDrawer({
           accepted={agentAccepted}
           onAccept={() => setAgentAccepted(true)}
           onNotAccept={() => setAgentAccepted(false)}
+  onCheckDetails={onCheckDetails}
           onRerun={handleRerun}
           isRerunning={isRerunning}
         />

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Pencil, Check, X, Sparkles } from 'lucide-react';
+import { Pencil, Check, X, Sparkles, AlertCircle, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -18,6 +18,8 @@ interface EditableFieldProps {
   onSave: (value: string) => void;
   source?: 'ai' | 'user';
   updatedBy?: string;
+  issue?: { status: 'warn' | 'fail'; reason: string };
+  dimmed?: boolean;
 }
 
 function getInitials(email?: string): string {
@@ -53,7 +55,9 @@ export function EditableField({
   isMoney = false, 
   onSave,
   source = 'ai',
-  updatedBy
+  updatedBy,
+  issue,
+  dimmed = false,
 }: EditableFieldProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(value?.toString() || '');
@@ -116,11 +120,40 @@ export function EditableField({
     );
   };
 
+  const IssueBadge = () => {
+    if (!issue) return null;
+    return (
+      <TooltipProvider delayDuration={150}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="inline-flex items-center cursor-default">
+              {issue.status === 'fail' ? (
+                <XCircle className="h-3 w-3 text-destructive" />
+              ) : (
+                <AlertCircle className="h-3 w-3 text-amber-500" />
+              )}
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="max-w-[220px] text-xs px-2.5 py-1.5">
+            <span>{issue.reason}</span>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
+  const borderClass = issue
+    ? issue.status === 'fail'
+      ? 'rounded-lg border border-destructive/40 bg-destructive/5 px-3 py-2 -mx-3 -my-1'
+      : 'rounded-lg border border-amber-300/60 bg-amber-50/50 px-3 py-2 -mx-3 -my-1'
+    : '';
+
   return (
-    <div>
+    <div className={`transition-opacity duration-300 ${dimmed ? 'opacity-30' : ''} ${borderClass}`}>
       <div className="flex items-center gap-1.5 mb-1">
         <SourceIndicator />
         <label className="text-xs text-muted-foreground">{label}</label>
+        <IssueBadge />
       </div>
       
       {isEditing ? (

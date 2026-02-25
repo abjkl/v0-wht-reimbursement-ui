@@ -34,6 +34,7 @@ export default function RequestDetailPage() {
   const [showManualDecision, setShowManualDecision] = useState(false);
   const [activeDocTab, setActiveDocTab] = useState('wht-slip');
   const [showAIDrawer, setShowAIDrawer] = useState(true);
+  const [fieldIssues, setFieldIssues] = useState<Record<string, { status: 'warn' | 'fail'; reason: string }> | null>(null);
 
   const request = requests.find(r => r.id === params.id);
 
@@ -272,6 +273,41 @@ export default function RequestDetailPage() {
   const warnChecks = validationChecks.filter(c => c.status === 'warn').length;
   const failedChecks = validationChecks.filter(c => c.status === 'fail').length;
 
+  // Map validation check labels to field names for highlighting
+  const checkToFieldMap: Record<string, string[]> = {
+    'Entity Identity Match (Shopee)': ['taxpayerNpwp', 'taxpayerName', 'issuerNpwp', 'issuerName'],
+    'Collector Identity Match (Seller/Merchant)': ['collectorNpwp', 'collectorName', 'buyerNpwp', 'buyerName'],
+    'Invoice Reference Match (B9)': ['referencedInvoiceNumber', 'taxInvoiceNumber', 'invoiceNumberOcr'],
+    'WHT Code Allowed (B3)': ['whtCode'],
+    'WHT Rate = 2% (B6)': ['whtRate'],
+    'Tax Base Match (B5)': ['taxBase', 'dppTaxBase'],
+    'WHT Amount Correct (B7)': ['whtAmount'],
+    'Requested Amount Matches WHT': ['whtAmount'],
+  };
+
+  const handleCheckDetails = () => {
+    const issues: Record<string, { status: 'warn' | 'fail'; reason: string }> = {};
+    validationChecks
+      .filter(c => c.status !== 'pass')
+      .forEach(check => {
+        const fields = checkToFieldMap[check.label];
+        if (fields) {
+          fields.forEach(field => {
+            // fail takes priority over warn
+            if (!issues[field] || (check.status === 'fail' && issues[field].status === 'warn')) {
+              issues[field] = { status: check.status as 'warn' | 'fail', reason: check.reason || check.helper };
+            }
+          });
+        }
+      });
+    setFieldIssues(issues);
+    setActiveDocTab('wht-slip');
+  };
+
+  const handleClearIssues = () => {
+    setFieldIssues(null);
+  };
+
   const handleApprove = () => {
     updateRequest(request.id, {
       status: 'Approved',
@@ -392,7 +428,7 @@ export default function RequestDetailPage() {
         {/* Middle Panel - Parsed Fields & Details */}
         <div className="flex-1 min-w-0 space-y-4 overflow-auto bg-background p-6 pb-32">
           {/* Document Context Panel - Changes based on active tab */}
-          <DocumentContextPanel request={request} activeTab={activeDocTab} />
+          <DocumentContextPanel request={request} activeTab={activeDocTab} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
 
           {/* Audit Log */}
           <AuditLog entries={request.auditLog} />
@@ -409,6 +445,7 @@ export default function RequestDetailPage() {
           onClose={() => setShowAIDrawer(false)}
           onApprove={handleApprove}
           onReject={() => setShowManualDecision(true)}
+          onCheckDetails={handleCheckDetails}
         />
       </div>
 
