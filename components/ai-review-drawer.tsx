@@ -157,11 +157,11 @@ function AgentCard({
             </button>
           </div>
 
-          {/* Part 2: Supporting Details - Validation Checks */}
+          {/* Part 2: Supporting Details */}
           <div className="px-4 pb-3">
             <div className="flex items-center justify-between mb-2">
               <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Validation Checks
+                Details
               </span>
               <div className="flex items-center gap-1.5 text-[10px]">
                 <span className="text-green-600 font-semibold">{passedChecks}</span>
