@@ -1,6 +1,5 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { EditableField } from '@/components/editable-field';
 import type { WHTRequest } from '@/lib/types';
@@ -148,25 +147,20 @@ export function DocumentContextPanel({ request, activeTab, fieldIssues, onClearI
   };
 
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="border-b bg-muted/30 pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold">{getDocumentTitle()}</CardTitle>
-          {hasIssues && (
-            <button
-              onClick={onClearIssues}
-              className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Clear highlights
-            </button>
-          )}
+    <div>
+      {hasIssues && (
+        <div className="mb-4 flex items-center justify-end">
+          <button
+            onClick={onClearIssues}
+            className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Clear highlights
+          </button>
         </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        {activeTab === 'wht-slip' && renderWHTSlipFields()}
-        {activeTab === 'tax-invoice' && renderTaxInvoiceFields()}
-        {activeTab === 'shopee-invoice' && renderShopeeInvoiceFields()}
-      </CardContent>
-    </Card>
+      )}
+      {activeTab === 'wht-slip' && renderWHTSlipFields()}
+      {activeTab === 'tax-invoice' && renderTaxInvoiceFields()}
+      {activeTab === 'shopee-invoice' && renderShopeeInvoiceFields()}
+    </div>
   );
 }

@@ -3,7 +3,6 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useStore } from '@/lib/store';
-import { DocumentViewer } from '@/components/document-viewer';
 import { DocumentContextPanel } from '@/components/document-context-panel';
 import { AIReviewDrawer } from '@/components/ai-review-drawer';
 
@@ -31,7 +30,6 @@ export default function RequestDetailPage() {
   const [showApproveDialog, setShowApproveDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectionReasons, setRejectionReasons] = useState<string[]>([]);
-  const [showManualDecision, setShowManualDecision] = useState(false);
   const [activeDocTab, setActiveDocTab] = useState('wht-slip');
   const [showAIDrawer, setShowAIDrawer] = useState(true);
   const [fieldIssues, setFieldIssues] = useState<Record<string, { status: 'warn' | 'fail'; reason: string }> | null>(null);
@@ -346,17 +344,6 @@ export default function RequestDetailPage() {
     setRejectionReasons([]);
   };
 
-  const handleAcceptAI = () => {
-    if (request.aiSuggestion === 'Approve') {
-      setShowApproveDialog(true);
-    } else if (request.aiSuggestion === 'Reject') {
-      setShowRejectDialog(true);
-    }
-  };
-
-  const currentIndex = requests.findIndex(r => r.id === request.id);
-  const nextRequest = requests[currentIndex + 1];
-
   const rejectionOptions = [
     'Missing or incomplete documentation',
     'Invoice number mismatch',
@@ -458,15 +445,32 @@ export default function RequestDetailPage() {
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden bg-background">
-        {/* Left Panel - Document Viewer */}
-        <div className="flex-1 min-w-0 border-r p-6">
-          <DocumentViewer request={request} onTabChange={setActiveDocTab} />
-        </div>
+        {/* Left: Parsed Fields (primary content) */}
+        <div className="flex-1 min-w-0 overflow-auto pb-28">
+          {/* Document Tab Switcher */}
+          <div className="sticky top-0 z-10 flex items-center gap-1 border-b bg-background px-6 py-2">
+            {[
+              { key: 'wht-slip', label: 'WHT Slip' },
+              { key: 'tax-invoice', label: 'Tax Invoice' },
+              { key: 'shopee-invoice', label: 'Shopee Invoice' },
+            ].map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveDocTab(tab.key)}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  activeDocTab === tab.key
+                    ? 'bg-foreground text-background'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Middle Panel - Parsed Fields & Details */}
-        <div className="flex-1 min-w-0 space-y-4 overflow-auto bg-background p-6 pb-32">
-          {/* Document Context Panel - Changes based on active tab */}
-          <DocumentContextPanel request={request} activeTab={activeDocTab} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
+          <div className="p-6">
+            <DocumentContextPanel request={request} activeTab={activeDocTab} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
+          </div>
         </div>
 
         {/* Right Drawer - AI Review */}
@@ -479,78 +483,29 @@ export default function RequestDetailPage() {
           open={showAIDrawer}
           onClose={() => setShowAIDrawer(false)}
           onApprove={handleApprove}
-          onReject={() => setShowManualDecision(true)}
+          onReject={() => setShowRejectDialog(true)}
           onCheckDetails={handleCheckDetails}
         />
       </div>
 
       {/* Sticky Bottom Actions */}
       {request.status !== 'Approved' && request.status !== 'Rejected' && (
-        <div className="fixed bottom-0 left-0 right-0 border-t bg-card shadow-lg">
-          <div className="flex items-center justify-between px-6 py-4">
-            {/* Left: Next Request */}
-            <div>
-              {nextRequest && (
-                <Button
-                  variant="outline"
-                  onClick={() => router.push(`/wht-requests/${nextRequest.id}`)}
-                  className="h-9"
-                >
-                  Next Request
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              )}
-            </div>
-
-            {/* Right: Decision Actions */}
-            <div className="flex items-center gap-3">
-              {/* AI Suggestion - Primary Action */}
-              {request.aiSuggestion !== 'Pending Review' && (
-                <>
-                  <Button
-                    onClick={handleAcceptAI}
-                    className={`h-9 ${
-                      request.aiSuggestion === 'Approve'
-                        ? 'bg-green-600 hover:bg-green-700'
-                        : 'bg-destructive hover:bg-destructive/90'
-                    }`}
-                  >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Accept AI Suggestion ({request.aiSuggestion})
-                    <span className="ml-2 text-xs opacity-90">
-                      {Math.round(request.aiConfidence * 100)}%
-                    </span>
-                  </Button>
-                  <button
-                    onClick={() => setShowManualDecision(!showManualDecision)}
-                    className="text-sm text-muted-foreground hover:text-foreground hover:underline"
-                  >
-                    Or decide manually {showManualDecision ? '◀' : '▶'}
-                  </button>
-                </>
-              )}
-
-              {/* Manual Decision Options - Collapsible */}
-              {(showManualDecision || request.aiSuggestion === 'Pending Review') && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={() => setShowRejectDialog(true)}
-                    className="h-9"
-                  >
-                    <XCircle className="mr-2 h-4 w-4" />
-                    Reject to Requestor
-                  </Button>
-                  <Button
-                    onClick={() => setShowApproveDialog(true)}
-                    className="h-9"
-                  >
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    Approve
-                  </Button>
-                </div>
-              )}
-            </div>
+        <div className="fixed bottom-0 left-0 right-0 border-t bg-card shadow-lg z-20">
+          <div className="flex items-center justify-end gap-3 px-6 py-3">
+            <Button
+              variant="ghost"
+              onClick={() => setShowRejectDialog(true)}
+              className="h-9 gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <XCircle className="h-4 w-4" />
+              Reject to Requestor
+            </Button>
+            <Button
+              onClick={() => setShowApproveDialog(true)}
+              className="h-9"
+            >
+              Next Step
+            </Button>
           </div>
         </div>
       )}
