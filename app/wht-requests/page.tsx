@@ -1,15 +1,31 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useStore } from '@/lib/store';
 import { filterRequests } from '@/lib/filter-utils';
 import { FiltersBar } from '@/components/filters-bar';
 import { RequestsTable } from '@/components/requests-table';
 import { Button } from '@/components/ui/button';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 export default function WHTRequestsPage() {
-  const { requests, filters } = useStore();
+  const { requests, filters, updateRequest } = useStore();
   const [activeTab, setActiveTab] = useState<'all' | 'in-preparation' | 'pending-review' | 'approved' | 'rejected'>('all');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const handleBatchApprove = useCallback(() => {
+    selectedIds.forEach(id => {
+      updateRequest(id, { status: 'Approved' });
+    });
+    setSelectedIds(new Set());
+  }, [selectedIds, updateRequest]);
+
+  const handleBatchReject = useCallback(() => {
+    selectedIds.forEach(id => {
+      updateRequest(id, { status: 'Rejected' });
+    });
+    setSelectedIds(new Set());
+  }, [selectedIds, updateRequest]);
 
   const inPreparation = useMemo(
     () => requests.filter(r => r.status === 'Submitted'),
@@ -96,8 +112,40 @@ export default function WHTRequestsPage() {
         </div>
 
         {/* Table */}
-        <RequestsTable requests={displayRequests} />
+        <RequestsTable
+          requests={displayRequests}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
+        />
       </div>
+
+      {/* Batch Action Bar */}
+      {selectedIds.size > 0 && (
+        <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-card shadow-lg">
+          <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-3">
+            <span className="text-sm text-muted-foreground">
+              Selected <span className="font-semibold text-foreground">{selectedIds.size}</span> request(s)
+            </span>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+                onClick={handleBatchReject}
+              >
+                <XCircle className="mr-2 h-4 w-4" />
+                Batch Reject
+              </Button>
+              <Button
+                className="bg-emerald-600 text-white hover:bg-emerald-700"
+                onClick={handleBatchApprove}
+              >
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+                Batch Approve
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

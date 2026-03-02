@@ -2,15 +2,38 @@
 
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import type { WHTRequest } from '@/lib/types';
 
 interface RequestsTableProps {
   requests: WHTRequest[];
+  selectedIds: Set<string>;
+  onSelectionChange: (ids: Set<string>) => void;
 }
 
-export function RequestsTable({ requests }: RequestsTableProps) {
+export function RequestsTable({ requests, selectedIds, onSelectionChange }: RequestsTableProps) {
+  const allSelected = requests.length > 0 && requests.every(r => selectedIds.has(r.id));
+  const someSelected = requests.some(r => selectedIds.has(r.id)) && !allSelected;
+
+  const toggleAll = () => {
+    if (allSelected) {
+      onSelectionChange(new Set());
+    } else {
+      onSelectionChange(new Set(requests.map(r => r.id)));
+    }
+  };
+
+  const toggleRow = (id: string) => {
+    const next = new Set(selectedIds);
+    if (next.has(id)) {
+      next.delete(id);
+    } else {
+      next.add(id);
+    }
+    onSelectionChange(next);
+  };
   const getStatusBadgeVariant = (status: WHTRequest['status']) => {
     switch (status) {
       case 'Submitted':
@@ -42,7 +65,10 @@ export function RequestsTable({ requests }: RequestsTableProps) {
           <TableHeader>
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-[50px]">
-                <input type="checkbox" className="rounded border" />
+                <Checkbox
+                  checked={allSelected ? true : someSelected ? 'indeterminate' : false}
+                  onCheckedChange={toggleAll}
+                />
               </TableHead>
               <TableHead className="w-[140px]">Request ID</TableHead>
               <TableHead className="w-[120px]">Submission Date</TableHead>
@@ -66,7 +92,10 @@ export function RequestsTable({ requests }: RequestsTableProps) {
               requests.map((req) => (
                 <TableRow key={req.id} className="hover:bg-muted/30">
                   <TableCell>
-                    <input type="checkbox" className="rounded border" />
+                    <Checkbox
+                      checked={selectedIds.has(req.id)}
+                      onCheckedChange={() => toggleRow(req.id)}
+                    />
                   </TableCell>
                   <TableCell className="font-mono text-sm">
                     <Link href={`/wht-requests/${req.id}`} className="text-primary hover:underline">
