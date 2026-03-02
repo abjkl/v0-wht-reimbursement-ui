@@ -373,17 +373,16 @@ export default function RequestDetailPage() {
       {/* Header Bar */}
       <div className="border-b bg-background px-6 py-2.5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-2 text-sm">
             <button
               onClick={() => router.push('/wht-requests')}
-              className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              <ArrowLeft className="h-4 w-4" />
-              Back
+              WHT Reimbursement
             </button>
-            <span className="text-muted-foreground/40">{'/'}</span>
-            <span className="font-medium text-foreground">{request.id}</span>
-            <Badge variant="secondary" className="text-xs">
+            <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50" />
+            <span className="font-medium text-foreground">WHT Reimbursement Request Detail</span>
+            <Badge variant="secondary" className="ml-1 text-xs">
               {request.status}
             </Badge>
           </div>
