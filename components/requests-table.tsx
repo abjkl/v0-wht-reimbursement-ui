@@ -24,14 +24,14 @@ export function RequestsTable({ requests }: RequestsTableProps) {
     }
   };
 
-  const getAISuggestionBadgeVariant = (suggestion: WHTRequest['aiSuggestion']) => {
+  const getAISuggestionStyle = (suggestion: WHTRequest['aiSuggestion']) => {
     switch (suggestion) {
       case 'Approve':
-        return 'default';
+        return { dot: 'bg-emerald-500', text: 'text-emerald-700' };
       case 'Reject':
-        return 'destructive';
+        return { dot: 'bg-red-500', text: 'text-red-700' };
       case 'Pending Review':
-        return 'secondary';
+        return { dot: 'bg-amber-400', text: 'text-amber-700' };
     }
   };
 
@@ -81,12 +81,29 @@ export function RequestsTable({ requests }: RequestsTableProps) {
                     {formatCurrency(req.requestedReimbursementAmount)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getAISuggestionBadgeVariant(req.aiSuggestion)} className="text-xs">
-                      {req.aiSuggestion}
-                    </Badge>
+                    {(() => {
+                      const style = getAISuggestionStyle(req.aiSuggestion);
+                      return (
+                        <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+                          <span className={`h-2 w-2 rounded-full ${style.dot}`} />
+                          <span className={style.text}>{req.aiSuggestion}</span>
+                        </span>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusBadgeVariant(req.status)} className="text-xs">
+                    <Badge
+                      variant="outline"
+                      className={`text-[11px] font-medium ${
+                        req.status === 'Approved'
+                          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                          : req.status === 'Rejected'
+                          ? 'border-red-200 bg-red-50 text-red-700'
+                          : req.status === 'Pending Review'
+                          ? 'border-amber-200 bg-amber-50 text-amber-700'
+                          : 'border-border bg-muted/50 text-muted-foreground'
+                      }`}
+                    >
                       {req.status}
                     </Badge>
                   </TableCell>
