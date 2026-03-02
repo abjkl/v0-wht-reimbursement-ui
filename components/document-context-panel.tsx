@@ -7,12 +7,11 @@ import type { WHTRequest } from '@/lib/types';
 
 interface DocumentContextPanelProps {
   request: WHTRequest;
-  activeTab: string;
   fieldIssues?: Record<string, { status: 'warn' | 'fail'; reason: string }> | null;
   onClearIssues?: () => void;
 }
 
-export function DocumentContextPanel({ request, activeTab, fieldIssues, onClearIssues }: DocumentContextPanelProps) {
+export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: DocumentContextPanelProps) {
   const hasIssues = fieldIssues && Object.keys(fieldIssues).length > 0;
 
   const handleFieldSave = (field: string) => (value: string) => {
@@ -140,33 +139,48 @@ export function DocumentContextPanel({ request, activeTab, fieldIssues, onClearI
     );
   };
 
-  const getDocumentTitle = () => {
-    if (activeTab === 'wht-slip') return 'Parsed Key Fields - WHT Slip';
-    if (activeTab === 'tax-invoice') return 'Parsed Key Fields - Tax Invoice';
-    if (activeTab === 'shopee-invoice') return 'Parsed Key Fields - Shopee Invoice';
-    return 'Parsed Key Fields';
-  };
-
   return (
-    <Card className="shadow-sm">
-      <CardHeader className="border-b bg-muted/30 pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-semibold">{getDocumentTitle()}</CardTitle>
-          {hasIssues && (
-            <button
-              onClick={onClearIssues}
-              className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Clear highlights
-            </button>
-          )}
+    <div className="space-y-6">
+      {hasIssues && (
+        <div className="flex items-center justify-end">
+          <button
+            onClick={onClearIssues}
+            className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Clear highlights
+          </button>
         </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        {activeTab === 'wht-slip' && renderWHTSlipFields()}
-        {activeTab === 'tax-invoice' && renderTaxInvoiceFields()}
-        {activeTab === 'shopee-invoice' && renderShopeeInvoiceFields()}
-      </CardContent>
-    </Card>
+      )}
+
+      {/* WHT Slip */}
+      <Card className="shadow-sm">
+        <CardHeader className="border-b bg-muted/30 py-3">
+          <CardTitle className="text-sm font-semibold">WHT Slip</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-5 pb-5">
+          {renderWHTSlipFields()}
+        </CardContent>
+      </Card>
+
+      {/* Tax Invoice */}
+      <Card className="shadow-sm">
+        <CardHeader className="border-b bg-muted/30 py-3">
+          <CardTitle className="text-sm font-semibold">Tax Invoice</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-5 pb-5">
+          {renderTaxInvoiceFields()}
+        </CardContent>
+      </Card>
+
+      {/* Shopee Invoice */}
+      <Card className="shadow-sm">
+        <CardHeader className="border-b bg-muted/30 py-3">
+          <CardTitle className="text-sm font-semibold">Shopee Invoice</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-5 pb-5">
+          {renderShopeeInvoiceFields()}
+        </CardContent>
+      </Card>
+    </div>
   );
 }

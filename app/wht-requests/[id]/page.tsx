@@ -442,7 +442,7 @@ export default function RequestDetailPage() {
 
             {/* Middle Panel - Parsed Fields & Details */}
             <div className="flex-1 min-w-0 space-y-4 overflow-auto bg-background p-6 pb-32">
-              <DocumentContextPanel request={request} activeTab={activeDocTab} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
+              <DocumentContextPanel request={request} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
             </div>
           </div>
         </div>
