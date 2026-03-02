@@ -58,7 +58,7 @@ export function FiltersBar() {
       </div>
 
       {/* Operational Filters */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">AI Suggestion</Label>
           <Select
@@ -78,43 +78,6 @@ export function FiltersBar() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Docs Completeness</Label>
-          <Select
-            value={filters.missingDocs}
-            onValueChange={(value: any) => setFilters({ missingDocs: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All</SelectItem>
-              <SelectItem value="Complete">Complete (3/3)</SelectItem>
-              <SelectItem value="Missing WHT Slip">Missing WHT Slip</SelectItem>
-              <SelectItem value="Missing Tax Invoice">Missing Tax Invoice</SelectItem>
-              <SelectItem value="Missing Shopee Invoice">Missing Shopee Invoice</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Injection Status</Label>
-          <Select
-            value={filters.injectionStatus}
-            onValueChange={(value: any) => setFilters({ injectionStatus: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All</SelectItem>
-              <SelectItem value="Done">Done</SelectItem>
-              <SelectItem value="Not Started">Not Started</SelectItem>
-              <SelectItem value="Failed">Failed</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">Amount Range</Label>
           <Select
             value={filters.amountRange}
@@ -125,9 +88,9 @@ export function FiltersBar() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Amounts</SelectItem>
-              <SelectItem value="<= 1000000">≤ Rp 1,000,000</SelectItem>
+              <SelectItem value="<= 1000000">{'<='} Rp 1,000,000</SelectItem>
               <SelectItem value="1000001-10000000">Rp 1M - 10M</SelectItem>
-              <SelectItem value="> 10000000">&gt; Rp 10,000,000</SelectItem>
+              <SelectItem value="> 10000000">{'>'} Rp 10,000,000</SelectItem>
             </SelectContent>
           </Select>
         </div>
