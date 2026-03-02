@@ -2,12 +2,21 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   CheckCircle2,
   AlertCircle,
   XCircle,
   RefreshCw,
-  Sparkles,
   ChevronDown,
   ChevronRight,
   PanelRightClose,
@@ -37,6 +46,7 @@ interface AIReviewDrawerProps {
   onApprove: () => void;
   onReject: () => void;
   onCheckDetails?: () => void;
+  onNotAcceptAI?: (incorrectChecks: string[], notes: string) => void;
 }
 
 // --- Agent Card Component ---
@@ -286,9 +296,27 @@ export function AIReviewDrawer({
   onApprove,
   onReject,
   onCheckDetails,
+  onNotAcceptAI,
 }: AIReviewDrawerProps) {
   const [isRerunning, setIsRerunning] = useState(false);
   const [agentAccepted, setAgentAccepted] = useState<boolean | null>(null);
+  const [showNotAcceptDialog, setShowNotAcceptDialog] = useState(false);
+  const [incorrectChecks, setIncorrectChecks] = useState<string[]>([]);
+  const [notAcceptNotes, setNotAcceptNotes] = useState('');
+
+  const handleNotAcceptOpen = () => {
+    setIncorrectChecks([]);
+    setNotAcceptNotes('');
+    setShowNotAcceptDialog(true);
+  };
+
+  const handleNotAcceptConfirm = () => {
+    setAgentAccepted(false);
+    onNotAcceptAI?.(incorrectChecks, notAcceptNotes);
+    setShowNotAcceptDialog(false);
+    setIncorrectChecks([]);
+    setNotAcceptNotes('');
+  };
 
   const handleRerun = async () => {
     setIsRerunning(true);
@@ -341,43 +369,82 @@ export function AIReviewDrawer({
           failedChecks={failedChecks}
           accepted={agentAccepted}
           onAccept={() => setAgentAccepted(true)}
-          onNotAccept={() => setAgentAccepted(false)}
+          onNotAccept={handleNotAcceptOpen}
   onCheckDetails={onCheckDetails}
           onRerun={handleRerun}
           isRerunning={isRerunning}
         />
 
         {/* Future agents can be added here */}
-        {/* <AgentCard name="Invoice Review" ... /> */}
-        {/* <AgentCard name="Tax Review" ... /> */}
       </div>
 
-      {/* Final Decision Footer */}
-      <div className="border-t bg-card px-4 py-3.5 space-y-3">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-3.5 w-3.5 text-blue-600" />
-          <span className="text-xs font-semibold">Final Decision</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onReject}
-            className="gap-1.5 border-red-200 text-red-700 hover:bg-red-50 hover:text-red-800"
-          >
-            <X className="h-3.5 w-3.5" />
-            Reject
-          </Button>
-          <Button
-            size="sm"
-            onClick={onApprove}
-            className="gap-1.5 bg-green-600 hover:bg-green-700 text-white"
-          >
-            <Check className="h-3.5 w-3.5" />
-            Accept
-          </Button>
-        </div>
-      </div>
+      {/* Not Accept Dialog */}
+      <Dialog open={showNotAcceptDialog} onOpenChange={setShowNotAcceptDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Not Accept AI Suggestion</DialogTitle>
+            <DialogDescription>
+              Please select which AI check item(s) you believe are incorrect.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="max-h-[320px] overflow-auto space-y-2 pr-1">
+              {validationChecks.map((check, idx) => (
+                <div
+                  key={idx}
+                  className={`flex items-start gap-2.5 rounded-lg border px-3 py-2.5 transition-colors ${
+                    incorrectChecks.includes(check.label)
+                      ? 'border-red-300 bg-red-50/50'
+                      : 'border-border hover:bg-muted/30'
+                  }`}
+                >
+                  <Checkbox
+                    id={`notaccept-${idx}`}
+                    checked={incorrectChecks.includes(check.label)}
+                    onCheckedChange={(checked) => {
+                      if (checked) {
+                        setIncorrectChecks([...incorrectChecks, check.label]);
+                      } else {
+                        setIncorrectChecks(incorrectChecks.filter(l => l !== check.label));
+                      }
+                    }}
+                    className="mt-0.5"
+                  />
+                  <label htmlFor={`notaccept-${idx}`} className="flex-1 cursor-pointer">
+                    <div className="flex items-center gap-2">
+                      <div className="flex-shrink-0">
+                        {check.status === 'pass' && <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />}
+                        {check.status === 'warn' && <AlertCircle className="h-3.5 w-3.5 text-amber-500" />}
+                        {check.status === 'fail' && <XCircle className="h-3.5 w-3.5 text-red-500" />}
+                      </div>
+                      <span className="text-sm font-medium">{check.label}</span>
+                    </div>
+                    <p className="mt-0.5 text-xs text-muted-foreground pl-5.5">{check.helper}</p>
+                  </label>
+                </div>
+              ))}
+            </div>
+            <Textarea
+              placeholder="Additional notes (optional)..."
+              value={notAcceptNotes}
+              onChange={(e) => setNotAcceptNotes(e.target.value)}
+              rows={2}
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowNotAcceptDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleNotAcceptConfirm}
+              disabled={incorrectChecks.length === 0}
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

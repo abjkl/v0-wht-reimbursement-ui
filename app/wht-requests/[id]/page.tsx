@@ -10,7 +10,7 @@ import { AIReviewDrawer } from '@/components/ai-review-drawer';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, CheckCircle, XCircle, ChevronRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, CheckCircle, XCircle, AlertCircle, ChevronRight, Sparkles } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/filter-utils';
 import {
   Dialog,
@@ -316,16 +316,12 @@ export default function RequestDetailPage() {
   const currentIndex = requests.findIndex(r => r.id === request.id);
   const nextRequest = requests[currentIndex + 1];
 
-  const rejectionOptions = [
-    'Missing or incomplete documentation',
-    'Invoice number mismatch',
-    'Invalid amount',
-    'Company information incomplete',
-    'Tax invoice issues',
-    'WHT slip issues',
-    'Duplicate request',
-    'Other'
-  ];
+  // Rejection options derived from validation check labels
+  const rejectionOptions = validationChecks.map(check => ({
+    label: check.label,
+    status: check.status,
+    section: check.section,
+  }));
 
   return (
     <div className="flex h-screen flex-col bg-background">
@@ -497,42 +493,61 @@ export default function RequestDetailPage() {
 
       {/* Reject Dialog */}
       <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Reject Request</DialogTitle>
             <DialogDescription>
-              Please select reason(s) for rejection. This action cannot be undone.
+              Please select which check item(s) failed. This will be sent to the requestor.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-3">
-              {rejectionOptions.map((reason) => (
-                <div key={reason} className="flex items-center space-x-2">
-                  <Checkbox
-                    id={reason}
-                    checked={rejectionReasons.includes(reason)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setRejectionReasons([...rejectionReasons, reason]);
-                      } else {
-                        setRejectionReasons(rejectionReasons.filter((r) => r !== reason));
-                      }
-                    }}
-                  />
-                  <label
-                    htmlFor={reason}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    {reason}
-                  </label>
-                </div>
-              ))}
+          <div className="space-y-4 py-2">
+            <div className="max-h-[360px] overflow-auto space-y-2 pr-1">
+              {(() => {
+                const grouped = rejectionOptions.reduce((acc, opt) => {
+                  if (!acc[opt.section]) acc[opt.section] = [];
+                  acc[opt.section].push(opt);
+                  return acc;
+                }, {} as Record<string, typeof rejectionOptions>);
+                return Object.entries(grouped).map(([section, checks]) => (
+                  <div key={section} className="space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{section}</span>
+                    {checks.map((check) => (
+                      <div
+                        key={check.label}
+                        className={`flex items-center gap-2.5 rounded-lg border px-3 py-2.5 transition-colors ${
+                          rejectionReasons.includes(check.label)
+                            ? 'border-red-300 bg-red-50/50'
+                            : 'border-border hover:bg-muted/30'
+                        }`}
+                      >
+                        <Checkbox
+                          id={`reject-${check.label}`}
+                          checked={rejectionReasons.includes(check.label)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setRejectionReasons([...rejectionReasons, check.label]);
+                            } else {
+                              setRejectionReasons(rejectionReasons.filter((r) => r !== check.label));
+                            }
+                          }}
+                        />
+                        <label htmlFor={`reject-${check.label}`} className="flex items-center gap-2 flex-1 cursor-pointer text-sm font-medium">
+                          {check.status === 'pass' && <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0" />}
+                          {check.status === 'warn' && <AlertCircle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />}
+                          {check.status === 'fail' && <XCircle className="h-3.5 w-3.5 text-red-500 flex-shrink-0" />}
+                          {check.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                ));
+              })()}
             </div>
             <Textarea
               placeholder="Additional notes..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={3}
+              rows={2}
             />
           </div>
           <DialogFooter>
