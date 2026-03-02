@@ -108,9 +108,9 @@ export default function RequestDetailPage() {
   });
 
   const collectorMatch = () => {
-    if (!wht?.collectorNpwp || !tax?.buyerNpwp) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
-    const npwpMatch = wht.collectorNpwp === tax.buyerNpwp;
-    const nameMatch = wht.collectorName?.toLowerCase() === tax.buyerName?.toLowerCase();
+  if (!wht?.sellerMerchantNpwp || !tax?.sellerMerchantNpwp) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+  const npwpMatch = wht.sellerMerchantNpwp === tax.sellerMerchantNpwp;
+  const nameMatch = wht.sellerMerchantName?.toLowerCase() === tax.sellerMerchantName?.toLowerCase();
     if (!npwpMatch || !nameMatch) return { status: 'fail' as CheckStatus, reason: 'NPWP/Name mismatch' };
     return { status: 'pass' as CheckStatus };
   };
@@ -130,7 +130,7 @@ export default function RequestDetailPage() {
     const matches = 
       ref === tax?.taxInvoiceNumber ||
       ref === request.invoiceNumber ||
-      ref === shopee?.invoiceNumberOcr;
+      ref === shopee?.commercialInvoiceNumber;
     if (!matches) return { status: 'fail' as CheckStatus, reason: 'Referenced invoice not found' };
     return { status: 'pass' as CheckStatus };
   };
@@ -181,8 +181,8 @@ export default function RequestDetailPage() {
   });
 
   const taxBaseCheck = () => {
-    if (wht?.taxBase == null || tax?.dppTaxBase == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
-    if (wht.taxBase !== tax.dppTaxBase) return { status: 'fail' as CheckStatus, reason: 'Tax base mismatch' };
+  if (wht?.dpp == null || tax?.dpp == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+  if (wht.dpp !== tax.dpp) return { status: 'fail' as CheckStatus, reason: 'Tax base mismatch' };
     return { status: 'pass' as CheckStatus };
   };
   const taxBaseResult = taxBaseCheck();
@@ -195,8 +195,8 @@ export default function RequestDetailPage() {
   });
 
   const whtAmountCheck = () => {
-    if (wht?.taxBase == null || wht?.whtAmount == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
-    const expected = Math.round(0.02 * wht.taxBase);
+  if (wht?.dpp == null || wht?.whtAmount == null) return { status: 'warn' as CheckStatus, reason: 'Not extracted' };
+  const expected = Math.round(0.02 * wht.dpp);
     const diff = Math.abs(wht.whtAmount - expected);
     if (diff > 10) return { status: 'fail' as CheckStatus, reason: 'Amount not within ±10 tolerance' };
     return { status: 'pass' as CheckStatus };
@@ -225,48 +225,7 @@ export default function RequestDetailPage() {
     reason: requestedAmountResult.reason
   });
 
-  // SECTION E — Compliance & Eligibility
-  const exemptionCheck = () => {
-    if (request.exemptionPeriod == null) return { status: 'warn' as CheckStatus, reason: 'Policy config needed' };
-    if (request.exemptionPeriod.isInExemption) return { status: 'fail' as CheckStatus, reason: 'In exemption period' };
-    return { status: 'pass' as CheckStatus };
-  };
-  const exemptionResult = exemptionCheck();
-  validationChecks.push({
-    section: 'Compliance & Eligibility',
-    label: 'Not in Exemption Period (SKB)',
-    status: exemptionResult.status,
-    helper: 'Seller must not have active tax exemption',
-    reason: exemptionResult.reason
-  });
 
-  const duplicateCheck = () => {
-    if (request.duplicate == null) return { status: 'warn' as CheckStatus, reason: 'Duplicate check not available' };
-    if (request.duplicate.isDuplicate) return { status: 'fail' as CheckStatus, reason: 'Duplicate submission detected' };
-    return { status: 'pass' as CheckStatus };
-  };
-  const duplicateResult = duplicateCheck();
-  validationChecks.push({
-    section: 'Compliance & Eligibility',
-    label: 'Not Duplicate Submission',
-    status: duplicateResult.status,
-    helper: 'Request must not be a duplicate',
-    reason: duplicateResult.reason
-  });
-
-  const eligibilityCheck = () => {
-    if (request.eligibility == null) return { status: 'warn' as CheckStatus, reason: 'Eligibility not evaluated' };
-    if (!request.eligibility.isEligible) return { status: 'fail' as CheckStatus, reason: request.eligibility.reason || 'Not eligible' };
-    return { status: 'pass' as CheckStatus };
-  };
-  const eligibilityResult = eligibilityCheck();
-  validationChecks.push({
-    section: 'Compliance & Eligibility',
-    label: 'Eligible for Reimbursement',
-    status: eligibilityResult.status,
-    helper: 'Seller type and transaction must be eligible',
-    reason: eligibilityResult.reason
-  });
 
   // Summary counts
   const passedChecks = validationChecks.filter(c => c.status === 'pass').length;
