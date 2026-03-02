@@ -304,22 +304,14 @@ export function AIReviewDrawer({
   if (!open) return null;
 
   return (
-    <div className="flex h-full w-[340px] flex-shrink-0 flex-col border-l bg-muted/20">
+    <div className="flex h-full w-[340px] flex-shrink-0 flex-col border-l bg-background">
       {/* Header */}
-      <div className="bg-card border-b px-4 py-3.5">
+      <div className="border-b px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-600 shadow-sm">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold leading-tight">AI Assistant</h3>
-              <p className="text-[11px] text-muted-foreground">Review tasks & conclusions</p>
-            </div>
-          </div>
+          <h3 className="text-sm font-semibold">AI Review</h3>
           <button
             onClick={onClose}
-            className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
           >
             <PanelRightClose className="h-4 w-4" />
           </button>
@@ -337,7 +329,7 @@ export function AIReviewDrawer({
       </div>
 
       {/* Scrollable Agent Cards */}
-      <div className="flex-1 overflow-auto px-4 pb-4 space-y-3">
+      <div className="flex-1 overflow-auto px-4 pb-4 space-y-3 bg-muted/10">
         {/* Agent 1: WHT Slip Review */}
         <AgentCard
           name="WHT Slip Review"

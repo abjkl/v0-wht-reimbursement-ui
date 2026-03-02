@@ -408,13 +408,13 @@ export default function RequestDetailPage() {
               Attachments
             </Button>
             <Button
-              variant={showAIDrawer ? 'default' : 'outline'}
-              size="sm"
+              variant="outline"
+              size="icon"
               onClick={() => setShowAIDrawer(!showAIDrawer)}
-              className="gap-2"
+              className={`h-8 w-8 ${showAIDrawer ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground border-primary' : ''}`}
+              title="AI Review"
             >
-              <Sparkles className="h-3.5 w-3.5" />
-              AI Review
+              <Sparkles className="h-4 w-4" />
             </Button>
           </div>
         </div>
