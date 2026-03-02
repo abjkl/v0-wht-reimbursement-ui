@@ -9,15 +9,20 @@ import { Button } from '@/components/ui/button';
 
 export default function WHTRequestsPage() {
   const { requests, filters } = useStore();
-  const [activeTab, setActiveTab] = useState<'all' | 'to-review' | 'approved-not-injected' | 'rejected'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'in-preparation' | 'pending-review' | 'approved' | 'rejected'>('all');
 
-  const toReview = useMemo(
-    () => requests.filter(r => r.status === 'Submitted' || r.status === 'Pending Review'),
+  const inPreparation = useMemo(
+    () => requests.filter(r => r.status === 'Submitted'),
     [requests]
   );
 
-  const approvedNotInjected = useMemo(
-    () => requests.filter(r => r.status === 'Approved' && r.injectionStatus !== 'Done'),
+  const pendingReview = useMemo(
+    () => requests.filter(r => r.status === 'Pending Review'),
+    [requests]
+  );
+
+  const approved = useMemo(
+    () => requests.filter(r => r.status === 'Approved'),
     [requests]
   );
 
@@ -28,12 +33,14 @@ export default function WHTRequestsPage() {
 
   const getDisplayRequests = () => {
     switch (activeTab) {
-      case 'to-review':
-        return filterRequests(toReview, { ...filters, status: 'All' });
-      case 'approved-not-injected':
-        return filterRequests(approvedNotInjected, filters);
+      case 'in-preparation':
+        return filterRequests(inPreparation, { ...filters, status: 'All' });
+      case 'pending-review':
+        return filterRequests(pendingReview, { ...filters, status: 'All' });
+      case 'approved':
+        return filterRequests(approved, { ...filters, status: 'All' });
       case 'rejected':
-        return filterRequests(rejected, filters);
+        return filterRequests(rejected, { ...filters, status: 'All' });
       case 'all':
       default:
         return filterRequests(requests, filters);
@@ -60,46 +67,25 @@ export default function WHTRequestsPage() {
 
         {/* Status Tabs */}
         <div className="mb-6 flex items-center gap-6 border-b">
-          <button
-            onClick={() => setActiveTab('all')}
-            className={`pb-3 text-sm font-medium transition-colors ${
-              activeTab === 'all'
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            All <span className="ml-1 text-muted-foreground">{requests.length}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('to-review')}
-            className={`pb-3 text-sm font-medium transition-colors ${
-              activeTab === 'to-review'
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            To Review <span className="ml-1 text-muted-foreground">{toReview.length}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('approved-not-injected')}
-            className={`pb-3 text-sm font-medium transition-colors ${
-              activeTab === 'approved-not-injected'
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Approved (Not Injected) <span className="ml-1 text-muted-foreground">{approvedNotInjected.length}</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('rejected')}
-            className={`pb-3 text-sm font-medium transition-colors ${
-              activeTab === 'rejected'
-                ? 'border-b-2 border-primary text-foreground'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            Rejected <span className="ml-1 text-muted-foreground">{rejected.length}</span>
-          </button>
+          {([
+            { key: 'all', label: 'All', count: requests.length },
+            { key: 'in-preparation', label: 'In Preparation', count: inPreparation.length },
+            { key: 'pending-review', label: 'Pending Review', count: pendingReview.length },
+            { key: 'approved', label: 'Approved', count: approved.length },
+            { key: 'rejected', label: 'Rejected', count: rejected.length },
+          ] as const).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`pb-3 text-sm font-medium transition-colors ${
+                activeTab === tab.key
+                  ? 'border-b-2 border-primary text-foreground'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {tab.label} <span className="ml-1 text-muted-foreground">{tab.count}</span>
+            </button>
+          ))}
         </div>
 
         {/* Table Header Info */}
