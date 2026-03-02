@@ -388,41 +388,51 @@ export function AIReviewDrawer({
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="max-h-[320px] overflow-auto space-y-2 pr-1">
-              {validationChecks.map((check, idx) => (
-                <div
-                  key={idx}
-                  className={`flex items-start gap-2.5 rounded-lg border px-3 py-2.5 transition-colors ${
-                    incorrectChecks.includes(check.label)
-                      ? 'border-red-300 bg-red-50/50'
-                      : 'border-border hover:bg-muted/30'
-                  }`}
-                >
-                  <Checkbox
-                    id={`notaccept-${idx}`}
-                    checked={incorrectChecks.includes(check.label)}
-                    onCheckedChange={(checked) => {
-                      if (checked) {
-                        setIncorrectChecks([...incorrectChecks, check.label]);
-                      } else {
-                        setIncorrectChecks(incorrectChecks.filter(l => l !== check.label));
-                      }
-                    }}
-                    className="mt-0.5"
-                  />
-                  <label htmlFor={`notaccept-${idx}`} className="flex-1 cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <div className="flex-shrink-0">
-                        {check.status === 'pass' && <CheckCircle2 className="h-3.5 w-3.5 text-green-600" />}
-                        {check.status === 'warn' && <AlertCircle className="h-3.5 w-3.5 text-amber-500" />}
-                        {check.status === 'fail' && <XCircle className="h-3.5 w-3.5 text-red-500" />}
+            <div className="max-h-[400px] overflow-auto space-y-4 pr-1">
+              {(() => {
+                const grouped = validationChecks.reduce((acc, check) => {
+                  if (!acc[check.section]) acc[check.section] = [];
+                  acc[check.section].push(check);
+                  return acc;
+                }, {} as Record<string, ValidationCheck[]>);
+                return Object.entries(grouped).map(([section, checks]) => (
+                  <div key={section} className="space-y-1.5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{section}</span>
+                    {checks.map((check, idx) => (
+                      <div
+                        key={idx}
+                        className={`flex items-start gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
+                          incorrectChecks.includes(check.label)
+                            ? 'border-red-300 bg-red-50/50'
+                            : 'border-border hover:bg-muted/30'
+                        }`}
+                      >
+                        <Checkbox
+                          id={`notaccept-${section}-${idx}`}
+                          checked={incorrectChecks.includes(check.label)}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setIncorrectChecks([...incorrectChecks, check.label]);
+                            } else {
+                              setIncorrectChecks(incorrectChecks.filter(l => l !== check.label));
+                            }
+                          }}
+                          className="mt-0.5"
+                        />
+                        <label htmlFor={`notaccept-${section}-${idx}`} className="flex-1 cursor-pointer">
+                          <div className="flex items-center gap-2">
+                            {check.status === 'pass' && <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0" />}
+                            {check.status === 'warn' && <AlertCircle className="h-4 w-4 text-amber-500 flex-shrink-0" />}
+                            {check.status === 'fail' && <XCircle className="h-4 w-4 text-red-500 flex-shrink-0" />}
+                            <span className="text-sm font-semibold">{check.label}</span>
+                          </div>
+                          <p className="mt-0.5 text-xs text-muted-foreground pl-6">{check.helper}</p>
+                        </label>
                       </div>
-                      <span className="text-sm font-medium">{check.label}</span>
-                    </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground pl-5.5">{check.helper}</p>
-                  </label>
-                </div>
-              ))}
+                    ))}
+                  </div>
+                ));
+              })()}
             </div>
             <Textarea
               placeholder="Additional notes (optional)..."
