@@ -391,58 +391,63 @@ export default function RequestDetailPage() {
         </div>
       </div>
 
-      {/* Title Card */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-baseline gap-3">
-            <h1 className="text-lg font-semibold">WHT Reimbursement Request</h1>
-            <span className="text-sm text-muted-foreground">{request.id}</span>
-            <Badge variant="secondary" className="text-xs">{request.status}</Badge>
+      {/* Title Card + Content + AI Panel wrapper */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left: Title Card + Main Content */}
+        <div className="flex flex-1 min-w-0 flex-col">
+          {/* Title Card */}
+          <div className="border-b bg-card px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-baseline gap-3">
+                <h1 className="text-lg font-semibold">WHT Reimbursement Request</h1>
+                <span className="text-sm text-muted-foreground">{request.id}</span>
+                <Badge variant="secondary" className="text-xs">{request.status}</Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => router.push(`/wht-requests/${request.id}/attachments`)}
+                >
+                  Attachments
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setShowAIDrawer(!showAIDrawer)}
+                  className={`h-8 w-8 ${showAIDrawer ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground border-primary' : ''}`}
+                  title="AI Review"
+                >
+                  <Sparkles className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Inline Info */}
+            <div className="mt-3 flex items-center gap-6 text-[13px]">
+              <span className="text-muted-foreground">Submission Date: <span className="font-semibold text-foreground">{request.submissionDate}</span></span>
+              <span className="text-muted-foreground">Email: <span className="font-semibold text-foreground">{request.requestorEmail}</span></span>
+              <span className="text-muted-foreground">Username: <span className="font-semibold text-foreground">{request.usernameShopee || request.merchantName || '\u2014'}</span></span>
+              <span className="text-muted-foreground">Company Name: <span className="font-semibold text-foreground">{request.sellerCompanyName || request.syncedCompanyName || '\u2014'}</span></span>
+              <span className="text-muted-foreground">WHT.23 Reimbursement Amount: <span className="font-semibold text-foreground tabular-nums">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(request.requestedReimbursementAmount)}</span></span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push(`/wht-requests/${request.id}/attachments`)}
-            >
-              Attachments
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setShowAIDrawer(!showAIDrawer)}
-              className={`h-8 w-8 ${showAIDrawer ? 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground border-primary' : ''}`}
-              title="AI Review"
-            >
-              <Sparkles className="h-4 w-4" />
-            </Button>
+
+          {/* Main Content */}
+          <div className="flex flex-1 overflow-hidden bg-background">
+            {/* Left Panel - Document Viewer */}
+            <div className="flex-1 min-w-0 border-r p-6">
+              <DocumentViewer request={request} onTabChange={setActiveDocTab} />
+            </div>
+
+            {/* Middle Panel - Parsed Fields & Details */}
+            <div className="flex-1 min-w-0 space-y-4 overflow-auto bg-background p-6 pb-32">
+              <DocumentContextPanel request={request} activeTab={activeDocTab} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
+            </div>
           </div>
         </div>
 
-        {/* Inline Info */}
-        <div className="mt-3 flex items-center gap-6 text-[13px]">
-          <span className="text-muted-foreground">Submission Date: <span className="font-semibold text-foreground">{request.submissionDate}</span></span>
-          <span className="text-muted-foreground">Email: <span className="font-semibold text-foreground">{request.requestorEmail}</span></span>
-          <span className="text-muted-foreground">Username: <span className="font-semibold text-foreground">{request.usernameShopee || request.merchantName || '\u2014'}</span></span>
-          <span className="text-muted-foreground">Company Name: <span className="font-semibold text-foreground">{request.sellerCompanyName || request.syncedCompanyName || '\u2014'}</span></span>
-          <span className="text-muted-foreground">WHT.23 Reimbursement Amount: <span className="font-semibold text-foreground tabular-nums">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(request.requestedReimbursementAmount)}</span></span>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex flex-1 overflow-hidden bg-background">
-        {/* Left Panel - Document Viewer */}
-        <div className="flex-1 min-w-0 border-r p-6">
-          <DocumentViewer request={request} onTabChange={setActiveDocTab} />
-        </div>
-
-        {/* Middle Panel - Parsed Fields & Details */}
-        <div className="flex-1 min-w-0 space-y-4 overflow-auto bg-background p-6 pb-32">
-          {/* Document Context Panel - Changes based on active tab */}
-          <DocumentContextPanel request={request} activeTab={activeDocTab} fieldIssues={fieldIssues} onClearIssues={handleClearIssues} />
-        </div>
-
-        {/* Right Drawer - AI Review */}
+        {/* Right: AI Review Panel - aligned with Title Card */}
         <AIReviewDrawer
           request={request}
           validationChecks={validationChecks}
