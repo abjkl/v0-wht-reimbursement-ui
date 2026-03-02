@@ -14,6 +14,13 @@ export type InjectionStatus = "Done" | "Not Started" | "Failed";
 
 export type AISuggestion = "Approve" | "Reject" | "Pending Review";
 
+export interface FieldMetadata {
+  source?: 'ai' | 'user';
+  updatedBy?: string;
+  updatedAt?: string;
+  confidence?: number; // 0-100, percentage
+}
+
 export interface ExtractedWHTSlip {
   whtSlipNumber?: string;
   taxPeriod?: string;

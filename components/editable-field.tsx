@@ -18,6 +18,7 @@ interface EditableFieldProps {
   onSave: (value: string) => void;
   source?: 'ai' | 'user';
   updatedBy?: string;
+  confidence?: number; // 0-100
   issue?: { status: 'warn' | 'fail'; reason: string };
   dimmed?: boolean;
 }
@@ -56,6 +57,7 @@ export function EditableField({
   onSave,
   source = 'ai',
   updatedBy,
+  confidence,
   issue,
   dimmed = false,
 }: EditableFieldProps) {
@@ -120,6 +122,43 @@ export function EditableField({
     );
   };
 
+  const ConfidenceIndicator = () => {
+    if (source === 'user' || confidence == null) return null;
+    if (confidence >= 60) {
+      return (
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full bg-green-500 cursor-default">
+                <Check className="h-2 w-2 text-white" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="text-xs px-2.5 py-1.5">
+              <span>Confidence: {confidence}%</span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    return (
+      <TooltipProvider delayDuration={150}>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="inline-flex items-center gap-0.5 cursor-default">
+              <span className="inline-flex h-3.5 w-3.5 items-center justify-center rounded-full bg-amber-500">
+                <span className="text-[6px] font-bold text-white leading-none">!</span>
+              </span>
+              <span className="text-[10px] font-medium text-amber-600">{confidence}%</span>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top" className="text-xs px-2.5 py-1.5">
+            <span>Low confidence: {confidence}%</span>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  };
+
   const IssueBadge = () => {
     if (!issue) return null;
     return (
@@ -153,6 +192,7 @@ export function EditableField({
       <div className="flex items-center gap-1.5 mb-1">
         <SourceIndicator />
         <label className="text-xs text-muted-foreground">{label}</label>
+        <ConfidenceIndicator />
         <IssueBadge />
       </div>
       

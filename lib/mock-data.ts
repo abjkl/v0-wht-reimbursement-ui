@@ -37,16 +37,26 @@ export const mockRequests: WHTRequest[] = [
         sellerMerchantName: "PT Shopee Indonesia",
         referencedInvoiceNumber: "010.000-26.00000123",
         _metadata: {
+          whtSlipNumber: { source: 'ai', confidence: 95 },
+          taxPeriod: { source: 'ai', confidence: 88 },
+          whtSlipStatus: { source: 'ai', confidence: 92 },
+          taxpayerNpwp: { source: 'ai', confidence: 90 },
           taxpayerName: {
             source: 'user',
             updatedBy: 'reviewer@company.com',
             updatedAt: '2026-02-20T09:15:00Z'
           },
+          whtCode: { source: 'ai', confidence: 85 },
+          dpp: { source: 'ai', confidence: 78 },
+          whtRate: { source: 'ai', confidence: 96 },
+          whtAmount: { source: 'ai', confidence: 91 },
           sellerMerchantNpwp: {
             source: 'user',
             updatedBy: 'admin@company.com',
             updatedAt: '2026-02-20T10:30:00Z'
-          }
+          },
+          sellerMerchantName: { source: 'ai', confidence: 42 },
+          referencedInvoiceNumber: { source: 'ai', confidence: 55 }
         }
       },
       taxInvoice: {
@@ -59,11 +69,18 @@ export const mockRequests: WHTRequest[] = [
         dpp: 250000000,
         vatAmount: 27500000,
         _metadata: {
+          taxInvoiceNumber: { source: 'ai', confidence: 97 },
           issuerName: {
             source: 'user',
             updatedBy: 'tax.admin@company.com',
             updatedAt: '2026-02-20T11:00:00Z'
-          }
+          },
+          issuerNpwp: { source: 'ai', confidence: 93 },
+          sellerMerchantNpwp: { source: 'ai', confidence: 88 },
+          sellerMerchantName: { source: 'ai', confidence: 72 },
+          totalAmountInclTax: { source: 'ai', confidence: 85 },
+          dpp: { source: 'ai', confidence: 82 },
+          vatAmount: { source: 'ai', confidence: 80 }
         }
       },
       shopeeInvoice: {
@@ -72,7 +89,15 @@ export const mockRequests: WHTRequest[] = [
         sellerMerchantName: "PT Mall Fashion Indonesia",
         sellerMerchantUsername: "fashionstore_jkt",
         commercialInvoiceNumber: "INV-MP-2026-0001",
-        totalAmountInclTax: 250000000
+        totalAmountInclTax: 250000000,
+        _metadata: {
+          issuerName: { source: 'ai', confidence: 94 },
+          issuerNpwp: { source: 'ai', confidence: 38 },
+          sellerMerchantName: { source: 'ai', confidence: 76 },
+          sellerMerchantUsername: { source: 'ai', confidence: 91 },
+          commercialInvoiceNumber: { source: 'ai', confidence: 89 },
+          totalAmountInclTax: { source: 'ai', confidence: 83 }
+        }
       }
     },
     auditLog: [

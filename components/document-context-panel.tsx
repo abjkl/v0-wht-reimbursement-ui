@@ -41,7 +41,8 @@ export function DocumentContextPanel({ request, activeTab, fieldIssues, onClearI
     const fieldMeta = metadata?.[fieldName];
     return {
       source: (fieldMeta?.source || 'ai') as 'ai' | 'user',
-      updatedBy: fieldMeta?.updatedBy
+      updatedBy: fieldMeta?.updatedBy,
+      confidence: fieldMeta?.confidence as number | undefined
     };
   };
 
