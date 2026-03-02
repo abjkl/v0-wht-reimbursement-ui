@@ -17,14 +17,15 @@ export type AISuggestion = "Approve" | "Reject" | "Pending Review";
 export interface ExtractedWHTSlip {
   whtSlipNumber?: string;
   taxPeriod?: string;
+  whtSlipStatus?: string;
   taxpayerNpwp?: string;
   taxpayerName?: string;
-  collectorNpwp?: string;
-  collectorName?: string;
   whtCode?: string;
+  dpp?: number;
   whtRate?: number;
-  taxBase?: number;
   whtAmount?: number;
+  sellerMerchantNpwp?: string;
+  sellerMerchantName?: string;
   referencedInvoiceNumber?: string;
   // Field metadata
   _metadata?: Record<string, FieldMetadata>;
@@ -32,28 +33,24 @@ export interface ExtractedWHTSlip {
 
 export interface ExtractedTaxInvoice {
   taxInvoiceNumber?: string;
-  taxInvoiceDate?: string;
-  issuerNpwp?: string;
   issuerName?: string;
-  buyerNpwp?: string;
-  buyerName?: string;
-  dppTaxBase?: number;
+  issuerNpwp?: string;
+  sellerMerchantNpwp?: string;
+  sellerMerchantName?: string;
+  totalAmountInclTax?: number;
+  dpp?: number;
   vatAmount?: number;
-  totalAmount?: number;
   // Field metadata
   _metadata?: Record<string, FieldMetadata>;
 }
 
 export interface ExtractedShopeeInvoice {
-  invoiceNumberOcr?: string;
-  invoiceDate?: string;
   issuerName?: string;
   issuerNpwp?: string;
-  amountBeforeTax?: number;
-  totalAmount?: number;
-  currency?: string;
-  lineItemCount?: number;
-  description?: string;
+  sellerMerchantName?: string;
+  sellerMerchantUsername?: string;
+  commercialInvoiceNumber?: string;
+  totalAmountInclTax?: number;
   // Field metadata
   _metadata?: Record<string, FieldMetadata>;
 }

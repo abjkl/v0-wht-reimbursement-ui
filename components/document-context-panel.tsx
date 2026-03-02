@@ -42,29 +42,21 @@ export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: Do
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="WHT Slip Number (Nomor Bukti Potong)" value={wht?.whtSlipNumber} onSave={handleFieldSave('whtSlipNumber')} {...getFieldMetadata(wht?._metadata, 'whtSlipNumber')} {...fi('whtSlipNumber')} />
-          <EditableField label="Tax Period / Masa Pajak (MM-YYYY)" value={wht?.taxPeriod} onSave={handleFieldSave('taxPeriod')} {...getFieldMetadata(wht?._metadata, 'taxPeriod')} {...fi('taxPeriod')} />
+          <EditableField label="WHT Slip Number" value={wht?.whtSlipNumber} onSave={handleFieldSave('whtSlipNumber')} {...getFieldMetadata(wht?._metadata, 'whtSlipNumber')} {...fi('whtSlipNumber')} />
+          <EditableField label="Tax Period" value={wht?.taxPeriod} onSave={handleFieldSave('taxPeriod')} {...getFieldMetadata(wht?._metadata, 'taxPeriod')} {...fi('taxPeriod')} />
+          <EditableField label="Status" value={wht?.whtSlipStatus} onSave={handleFieldSave('whtSlipStatus')} {...getFieldMetadata(wht?._metadata, 'whtSlipStatus')} {...fi('whtSlipStatus')} />
+          <EditableField label="Taxpayer NPWP" value={wht?.taxpayerNpwp} onSave={handleFieldSave('taxpayerNpwp')} {...getFieldMetadata(wht?._metadata, 'taxpayerNpwp')} {...fi('taxpayerNpwp')} />
+          <EditableField label="Taxpayer Name" value={wht?.taxpayerName} onSave={handleFieldSave('taxpayerName')} {...getFieldMetadata(wht?._metadata, 'taxpayerName')} {...fi('taxpayerName')} />
           <EditableField label="WHT Code" value={wht?.whtCode} onSave={handleFieldSave('whtCode')} {...getFieldMetadata(wht?._metadata, 'whtCode')} {...fi('whtCode')} />
+        </div>
+        <Separator />
+        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+          <EditableField label="DPP" value={wht?.dpp} isMoney onSave={handleFieldSave('dpp')} {...getFieldMetadata(wht?._metadata, 'dpp')} {...fi('dpp')} />
           <EditableField label="WHT Rate (%)" value={wht?.whtRate} onSave={handleFieldSave('whtRate')} {...getFieldMetadata(wht?._metadata, 'whtRate')} {...fi('whtRate')} />
-        </div>
-
-        <Separator />
-
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="Taxpayer NPWP (Shopee)" value={wht?.taxpayerNpwp} onSave={handleFieldSave('taxpayerNpwp')} {...getFieldMetadata(wht?._metadata, 'taxpayerNpwp')} {...fi('taxpayerNpwp')} />
-          <EditableField label="Taxpayer Name (Shopee)" value={wht?.taxpayerName} onSave={handleFieldSave('taxpayerName')} {...getFieldMetadata(wht?._metadata, 'taxpayerName')} {...fi('taxpayerName')} />
-          <EditableField label="Collector NPWP (Seller/Merchant)" value={wht?.collectorNpwp} onSave={handleFieldSave('collectorNpwp')} {...getFieldMetadata(wht?._metadata, 'collectorNpwp')} {...fi('collectorNpwp')} />
-          <EditableField label="Collector Name (Seller/Merchant)" value={wht?.collectorName} onSave={handleFieldSave('collectorName')} {...getFieldMetadata(wht?._metadata, 'collectorName')} {...fi('collectorName')} />
-        </div>
-
-        <Separator />
-
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="Tax Base / DPP" value={wht?.taxBase} isMoney onSave={handleFieldSave('taxBase')} {...getFieldMetadata(wht?._metadata, 'taxBase')} {...fi('taxBase')} />
-          <EditableField label="WHT Amount (PPh23)" value={wht?.whtAmount} isMoney onSave={handleFieldSave('whtAmount')} {...getFieldMetadata(wht?._metadata, 'whtAmount')} {...fi('whtAmount')} />
-          <div className="col-span-2">
-            <EditableField label="Referenced Invoice Number" value={wht?.referencedInvoiceNumber} onSave={handleFieldSave('referencedInvoiceNumber')} {...getFieldMetadata(wht?._metadata, 'referencedInvoiceNumber')} {...fi('referencedInvoiceNumber')} />
-          </div>
+          <EditableField label="WHT Amount" value={wht?.whtAmount} isMoney onSave={handleFieldSave('whtAmount')} {...getFieldMetadata(wht?._metadata, 'whtAmount')} {...fi('whtAmount')} />
+          <EditableField label="Seller/Merchant NPWP" value={wht?.sellerMerchantNpwp} onSave={handleFieldSave('sellerMerchantNpwp')} {...getFieldMetadata(wht?._metadata, 'sellerMerchantNpwp')} {...fi('sellerMerchantNpwp')} />
+          <EditableField label="Seller/Merchant Name" value={wht?.sellerMerchantName} onSave={handleFieldSave('sellerMerchantName')} {...getFieldMetadata(wht?._metadata, 'sellerMerchantName')} {...fi('sellerMerchantName')} />
+          <EditableField label="Referenced Invoice Number" value={wht?.referencedInvoiceNumber} onSave={handleFieldSave('referencedInvoiceNumber')} {...getFieldMetadata(wht?._metadata, 'referencedInvoiceNumber')} {...fi('referencedInvoiceNumber')} />
         </div>
       </div>
     );
@@ -82,25 +74,16 @@ export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: Do
       <div className="space-y-6">
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
           <EditableField label="Tax Invoice Number" value={tax?.taxInvoiceNumber} onSave={handleFieldSave('taxInvoiceNumber')} {...getFieldMetadata(m, 'taxInvoiceNumber')} {...fi('taxInvoiceNumber')} />
-          <EditableField label="Tax Invoice Date" value={tax?.taxInvoiceDate} onSave={handleFieldSave('taxInvoiceDate')} {...getFieldMetadata(m, 'taxInvoiceDate')} {...fi('taxInvoiceDate')} />
-        </div>
-        <Separator />
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="Issuer NPWP" value={tax?.issuerNpwp} onSave={handleFieldSave('issuerNpwp')} {...getFieldMetadata(m, 'issuerNpwp')} {...fi('issuerNpwp')} />
           <EditableField label="Issuer Name" value={tax?.issuerName} onSave={handleFieldSave('issuerName')} {...getFieldMetadata(m, 'issuerName')} {...fi('issuerName')} />
+          <EditableField label="Issuer NPWP" value={tax?.issuerNpwp} onSave={handleFieldSave('issuerNpwp')} {...getFieldMetadata(m, 'issuerNpwp')} {...fi('issuerNpwp')} />
+          <EditableField label="Seller/Merchant NPWP" value={tax?.sellerMerchantNpwp} onSave={handleFieldSave('sellerMerchantNpwp')} {...getFieldMetadata(m, 'sellerMerchantNpwp')} {...fi('sellerMerchantNpwp')} />
+          <EditableField label="Seller/Merchant Name" value={tax?.sellerMerchantName} onSave={handleFieldSave('sellerMerchantName')} {...getFieldMetadata(m, 'sellerMerchantName')} {...fi('sellerMerchantName')} />
         </div>
         <Separator />
         <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="Buyer NPWP" value={tax?.buyerNpwp} onSave={handleFieldSave('buyerNpwp')} {...getFieldMetadata(m, 'buyerNpwp')} {...fi('buyerNpwp')} />
-          <EditableField label="Buyer Name" value={tax?.buyerName} onSave={handleFieldSave('buyerName')} {...getFieldMetadata(m, 'buyerName')} {...fi('buyerName')} />
-        </div>
-        <Separator />
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="DPP (Tax Base)" value={tax?.dppTaxBase} isMoney onSave={handleFieldSave('dppTaxBase')} {...getFieldMetadata(m, 'dppTaxBase')} {...fi('dppTaxBase')} />
-          <EditableField label="VAT Amount (PPN)" value={tax?.vatAmount} isMoney onSave={handleFieldSave('vatAmount')} {...getFieldMetadata(m, 'vatAmount')} {...fi('vatAmount')} />
-          <div className="col-span-2">
-            <EditableField label="Total Amount" value={tax?.totalAmount} isMoney onSave={handleFieldSave('totalAmount')} {...getFieldMetadata(m, 'totalAmount')} {...fi('totalAmount')} />
-          </div>
+          <EditableField label="Total Amount Incl. Tax" value={tax?.totalAmountInclTax} isMoney onSave={handleFieldSave('totalAmountInclTax')} {...getFieldMetadata(m, 'totalAmountInclTax')} {...fi('totalAmountInclTax')} />
+          <EditableField label="DPP" value={tax?.dpp} isMoney onSave={handleFieldSave('dpp')} {...getFieldMetadata(m, 'dpp')} {...fi('dpp')} />
+          <EditableField label="VAT Amount" value={tax?.vatAmount} isMoney onSave={handleFieldSave('vatAmount')} {...getFieldMetadata(m, 'vatAmount')} {...fi('vatAmount')} />
         </div>
       </div>
     );
@@ -115,26 +98,13 @@ export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: Do
     });
     
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="Invoice Number (OCR)" value={invoice?.invoiceNumberOcr} onSave={handleFieldSave('invoiceNumberOcr')} {...getFieldMetadata(m, 'invoiceNumberOcr')} {...fi('invoiceNumberOcr')} />
-          <EditableField label="Invoice Date" value={invoice?.invoiceDate} onSave={handleFieldSave('invoiceDate')} {...getFieldMetadata(m, 'invoiceDate')} {...fi('invoiceDate')} />
-          <EditableField label="Issuer Name" value={invoice?.issuerName} onSave={handleFieldSave('issuerName')} {...getFieldMetadata(m, 'issuerName')} {...fi('issuerName')} />
-          <EditableField label="Issuer NPWP" value={invoice?.issuerNpwp} onSave={handleFieldSave('issuerNpwp')} {...getFieldMetadata(m, 'issuerNpwp')} {...fi('issuerNpwp')} />
-        </div>
-        <Separator />
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-          <EditableField label="Amount Before Tax" value={invoice?.amountBeforeTax} isMoney onSave={handleFieldSave('amountBeforeTax')} {...getFieldMetadata(m, 'amountBeforeTax')} {...fi('amountBeforeTax')} />
-          <EditableField label="Total Amount" value={invoice?.totalAmount} isMoney onSave={handleFieldSave('totalAmount')} {...getFieldMetadata(m, 'totalAmount')} {...fi('totalAmount')} />
-          <EditableField label="Currency" value={invoice?.currency} onSave={handleFieldSave('currency')} {...getFieldMetadata(m, 'currency')} {...fi('currency')} />
-          <EditableField label="Line Item Count" value={invoice?.lineItemCount} onSave={handleFieldSave('lineItemCount')} {...getFieldMetadata(m, 'lineItemCount')} {...fi('lineItemCount')} />
-        </div>
-        {invoice?.description && (
-          <>
-            <Separator />
-            <EditableField label="Invoice Description" value={invoice.description} onSave={handleFieldSave('description')} {...getFieldMetadata(m, 'description')} {...fi('description')} />
-          </>
-        )}
+      <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+        <EditableField label="Issuer Name" value={invoice?.issuerName} onSave={handleFieldSave('issuerName')} {...getFieldMetadata(m, 'issuerName')} {...fi('issuerName')} />
+        <EditableField label="Issuer NPWP" value={invoice?.issuerNpwp} onSave={handleFieldSave('issuerNpwp')} {...getFieldMetadata(m, 'issuerNpwp')} {...fi('issuerNpwp')} />
+        <EditableField label="Seller/Merchant Name" value={invoice?.sellerMerchantName} onSave={handleFieldSave('sellerMerchantName')} {...getFieldMetadata(m, 'sellerMerchantName')} {...fi('sellerMerchantName')} />
+        <EditableField label="Seller/Merchant Username" value={invoice?.sellerMerchantUsername} onSave={handleFieldSave('sellerMerchantUsername')} {...getFieldMetadata(m, 'sellerMerchantUsername')} {...fi('sellerMerchantUsername')} />
+        <EditableField label="Commercial Invoice Number" value={invoice?.commercialInvoiceNumber} onSave={handleFieldSave('commercialInvoiceNumber')} {...getFieldMetadata(m, 'commercialInvoiceNumber')} {...fi('commercialInvoiceNumber')} />
+        <EditableField label="Total Amount Incl. Tax" value={invoice?.totalAmountInclTax} isMoney onSave={handleFieldSave('totalAmountInclTax')} {...getFieldMetadata(m, 'totalAmountInclTax')} {...fi('totalAmountInclTax')} />
       </div>
     );
   };

@@ -26,14 +26,15 @@ export const mockRequests: WHTRequest[] = [
       whtSlip: {
         whtSlipNumber: "BP-2301-000123",
         taxPeriod: "January 2026",
+        whtSlipStatus: "Normal",
         taxpayerNpwp: "01.234.567.8-901.000",
         taxpayerName: "PT Mall Fashion Indonesia",
-        collectorNpwp: "02.345.678.9-012.000",
-        collectorName: "PT Shopee Indonesia",
         whtCode: "23-100-01",
+        dpp: 250000000,
         whtRate: 2,
-        taxBase: 250000000,
         whtAmount: 5000000,
+        sellerMerchantNpwp: "02.345.678.9-012.000",
+        sellerMerchantName: "PT Shopee Indonesia",
         referencedInvoiceNumber: "010.000-26.00000123",
         _metadata: {
           taxpayerName: {
@@ -41,7 +42,7 @@ export const mockRequests: WHTRequest[] = [
             updatedBy: 'reviewer@company.com',
             updatedAt: '2026-02-20T09:15:00Z'
           },
-          collectorNpwp: {
+          sellerMerchantNpwp: {
             source: 'user',
             updatedBy: 'admin@company.com',
             updatedAt: '2026-02-20T10:30:00Z'
@@ -50,14 +51,13 @@ export const mockRequests: WHTRequest[] = [
       },
       taxInvoice: {
         taxInvoiceNumber: "010.000-26.00000123",
-        taxInvoiceDate: "2026-01-15",
-        issuerNpwp: "01.234.567.8-901.000",
         issuerName: "PT Mall Fashion Indonesia",
-        buyerNpwp: "02.345.678.9-012.000",
-        buyerName: "PT Shopee Indonesia",
-        dppTaxBase: 250000000,
+        issuerNpwp: "01.234.567.8-901.000",
+        sellerMerchantNpwp: "02.345.678.9-012.000",
+        sellerMerchantName: "PT Shopee Indonesia",
+        totalAmountInclTax: 277500000,
+        dpp: 250000000,
         vatAmount: 27500000,
-        totalAmount: 277500000,
         _metadata: {
           issuerName: {
             source: 'user',
@@ -67,11 +67,12 @@ export const mockRequests: WHTRequest[] = [
         }
       },
       shopeeInvoice: {
-        invoiceNumberOcr: "INV-MP-2026-0001",
-        invoiceDate: "2026-01-14",
         issuerName: "PT Shopee Indonesia",
-        amountBeforeTax: 250000000,
-        totalAmount: 250000000
+        issuerNpwp: "03.456.789.0-123.000",
+        sellerMerchantName: "PT Mall Fashion Indonesia",
+        sellerMerchantUsername: "fashionstore_jkt",
+        commercialInvoiceNumber: "INV-MP-2026-0001",
+        totalAmountInclTax: 250000000
       }
     },
     auditLog: [

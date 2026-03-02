@@ -276,11 +276,11 @@ export default function RequestDetailPage() {
   // Map validation check labels to field names for highlighting
   const checkToFieldMap: Record<string, string[]> = {
     'Entity Identity Match (Shopee)': ['taxpayerNpwp', 'taxpayerName', 'issuerNpwp', 'issuerName'],
-    'Collector Identity Match (Seller/Merchant)': ['collectorNpwp', 'collectorName', 'buyerNpwp', 'buyerName'],
-    'Invoice Reference Match (B9)': ['referencedInvoiceNumber', 'taxInvoiceNumber', 'invoiceNumberOcr'],
+    'Collector Identity Match (Seller/Merchant)': ['sellerMerchantNpwp', 'sellerMerchantName'],
+    'Invoice Reference Match (B9)': ['referencedInvoiceNumber', 'taxInvoiceNumber', 'commercialInvoiceNumber'],
     'WHT Code Allowed (B3)': ['whtCode'],
     'WHT Rate = 2% (B6)': ['whtRate'],
-    'Tax Base Match (B5)': ['taxBase', 'dppTaxBase'],
+    'Tax Base Match (B5)': ['dpp'],
     'WHT Amount Correct (B7)': ['whtAmount'],
     'Requested Amount Matches WHT': ['whtAmount'],
   };
