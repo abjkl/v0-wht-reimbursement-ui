@@ -408,6 +408,54 @@ export default function RequestDetailPage() {
         </div>
       </div>
 
+      {/* Basic Info Section */}
+      <div className="border-b bg-muted/20 px-6 py-3">
+        <div className="flex items-center gap-8 text-sm">
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Submission Date</span>
+            <span className="font-medium">{request.submissionDate}</span>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Email</span>
+            <span className="font-medium">{request.requestorEmail}</span>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Username</span>
+            <span className="font-medium">{request.usernameShopee || request.merchantName || '\u2014'}</span>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Company Name</span>
+            <span className="font-medium">{request.sellerCompanyName || request.syncedCompanyName || '\u2014'}</span>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">WHT.23 Reimbursement Amount</span>
+            <span className="font-medium tabular-nums">
+              {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(request.requestedReimbursementAmount)}
+            </span>
+          </div>
+          <div className="h-8 w-px bg-border" />
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">AI Suggestion</span>
+            <Badge
+              variant={
+                request.aiSuggestion === 'Approve'
+                  ? 'default'
+                  : request.aiSuggestion === 'Reject'
+                  ? 'destructive'
+                  : 'secondary'
+              }
+              className="mt-0.5 w-fit text-[10px]"
+            >
+              {request.aiSuggestion}
+            </Badge>
+          </div>
+        </div>
+      </div>
+
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden bg-background">
         {/* Left Panel - Document Viewer */}
