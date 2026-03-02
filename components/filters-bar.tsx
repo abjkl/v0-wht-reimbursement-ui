@@ -14,12 +14,32 @@ export function FiltersBar() {
       {/* Core Filters */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Global Search</Label>
-          <Input
-            placeholder="Search by Request ID, Email, Username, Company, Invoice..."
-            value={filters.search}
-            onChange={(e) => setFilters({ search: e.target.value })}
-          />
+          <Label className="text-xs text-muted-foreground">Search</Label>
+          <div className="flex">
+            <Select
+              value={filters.searchField}
+              onValueChange={(value: any) => setFilters({ searchField: value })}
+            >
+              <SelectTrigger className="w-[150px] rounded-r-none border-r-0 shrink-0">
+                <SelectValue placeholder="Field" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Fields</SelectItem>
+                <SelectItem value="requestId">Request ID</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="username">Username</SelectItem>
+                <SelectItem value="companyName">Company Name</SelectItem>
+                <SelectItem value="invoiceNumber">Invoice Number</SelectItem>
+                <SelectItem value="npwp">NPWP</SelectItem>
+              </SelectContent>
+            </Select>
+            <Input
+              placeholder="Input"
+              value={filters.search}
+              onChange={(e) => setFilters({ search: e.target.value })}
+              className="rounded-l-none"
+            />
+          </div>
         </div>
 
         <div className="space-y-2">

@@ -69,25 +69,24 @@ export function filterRequests(
     // Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      const searchFields = [
-        req.id,
-        req.requestorEmail,
-        req.sellerCompanyName,
-        req.syncedCompanyName,
-        req.invoiceNumber,
-        req.shopId,
-        req.userId,
-        req.usernameShopee,
-        req.merchantId,
-        req.storeId,
-        req.merchantName,
-        req.midSid
-      ]
+      const field = filters.searchField || 'all';
+
+      const fieldMap: Record<string, (string | undefined)[]> = {
+        all: [req.id, req.requestorEmail, req.sellerCompanyName, req.syncedCompanyName, req.invoiceNumber, req.usernameShopee, req.merchantName, req.extracted?.whtSlip?.taxpayerNpwp, req.extracted?.whtSlip?.sellerMerchantNpwp],
+        requestId: [req.id],
+        email: [req.requestorEmail],
+        username: [req.usernameShopee, req.merchantName],
+        companyName: [req.sellerCompanyName, req.syncedCompanyName],
+        invoiceNumber: [req.invoiceNumber, req.extracted?.whtSlip?.referencedInvoiceNumber, req.extracted?.taxInvoice?.taxInvoiceNumber, req.extracted?.shopeeInvoice?.commercialInvoiceNumber],
+        npwp: [req.extracted?.whtSlip?.taxpayerNpwp, req.extracted?.whtSlip?.sellerMerchantNpwp, req.extracted?.taxInvoice?.issuerNpwp, req.extracted?.taxInvoice?.sellerMerchantNpwp],
+      };
+
+      const targets = (fieldMap[field] || fieldMap.all)
         .filter(Boolean)
-        .join(" ")
+        .join(' ')
         .toLowerCase();
 
-      if (!searchFields.includes(searchLower)) {
+      if (!targets.includes(searchLower)) {
         return false;
       }
     }

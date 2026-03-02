@@ -150,6 +150,7 @@ export interface FilterState {
     end?: string;
   };
   search: string;
+  searchField: "all" | "requestId" | "email" | "username" | "companyName" | "invoiceNumber" | "npwp";
   missingDocs: "All" | "Missing WHT Slip" | "Missing Tax Invoice" | "Missing Shopee Invoice" | "Complete";
   amountRange: "All" | "<= 1000000" | "1000001-10000000" | "> 10000000";
   sla: "All" | "> 3 days";

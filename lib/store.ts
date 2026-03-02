@@ -21,6 +21,7 @@ const defaultFilters: FilterState = {
   approver: "All",
   dateRange: {},
   search: "",
+  searchField: "all",
   missingDocs: "All",
   amountRange: "All",
   sla: "All"
