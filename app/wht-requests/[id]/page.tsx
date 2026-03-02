@@ -416,7 +416,6 @@ export default function RequestDetailPage() {
           <span className="text-muted-foreground">Username: <span className="font-semibold text-foreground">{request.usernameShopee || request.merchantName || '\u2014'}</span></span>
           <span className="text-muted-foreground">Company Name: <span className="font-semibold text-foreground">{request.sellerCompanyName || request.syncedCompanyName || '\u2014'}</span></span>
           <span className="text-muted-foreground">WHT.23 Reimbursement Amount: <span className="font-semibold text-foreground tabular-nums">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(request.requestedReimbursementAmount)}</span></span>
-          <span className="text-muted-foreground">AI Suggestion: <Badge variant={request.aiSuggestion === 'Approve' ? 'default' : request.aiSuggestion === 'Reject' ? 'destructive' : 'secondary'} className="ml-1 text-[10px]">{request.aiSuggestion}</Badge></span>
         </div>
       </div>
 
