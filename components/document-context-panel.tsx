@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { EditableField } from '@/components/editable-field';
@@ -7,11 +8,28 @@ import type { WHTRequest } from '@/lib/types';
 
 interface DocumentContextPanelProps {
   request: WHTRequest;
+  activeTab?: string;
   fieldIssues?: Record<string, { status: 'warn' | 'fail'; reason: string }> | null;
   onClearIssues?: () => void;
 }
 
-export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: DocumentContextPanelProps) {
+export function DocumentContextPanel({ request, activeTab, fieldIssues, onClearIssues }: DocumentContextPanelProps) {
+  const whtRef = useRef<HTMLDivElement>(null);
+  const taxRef = useRef<HTMLDivElement>(null);
+  const shopeeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!activeTab) return;
+    const refMap: Record<string, React.RefObject<HTMLDivElement | null>> = {
+      'wht-slip': whtRef,
+      'tax-invoice': taxRef,
+      'invoice': shopeeRef,
+    };
+    const targetRef = refMap[activeTab];
+    if (targetRef?.current) {
+      targetRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [activeTab]);
   const hasIssues = fieldIssues && Object.keys(fieldIssues).length > 0;
 
   const handleFieldSave = (field: string) => (value: string) => {
@@ -123,7 +141,7 @@ export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: Do
       )}
 
       {/* WHT Slip */}
-      <Card className="shadow-sm">
+      <Card ref={whtRef} className="shadow-sm scroll-mt-4">
         <CardHeader className="border-b bg-muted/30 py-3">
           <CardTitle className="text-sm font-semibold">WHT Slip</CardTitle>
         </CardHeader>
@@ -133,7 +151,7 @@ export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: Do
       </Card>
 
       {/* Tax Invoice */}
-      <Card className="shadow-sm">
+      <Card ref={taxRef} className="shadow-sm scroll-mt-4">
         <CardHeader className="border-b bg-muted/30 py-3">
           <CardTitle className="text-sm font-semibold">Tax Invoice</CardTitle>
         </CardHeader>
@@ -143,7 +161,7 @@ export function DocumentContextPanel({ request, fieldIssues, onClearIssues }: Do
       </Card>
 
       {/* Shopee Invoice */}
-      <Card className="shadow-sm">
+      <Card ref={shopeeRef} className="shadow-sm scroll-mt-4">
         <CardHeader className="border-b bg-muted/30 py-3">
           <CardTitle className="text-sm font-semibold">Shopee Invoice</CardTitle>
         </CardHeader>
