@@ -47,9 +47,9 @@ export function RequestsTable({ requests }: RequestsTableProps) {
               <TableHead className="w-[140px]">Request ID</TableHead>
               <TableHead className="w-[120px]">Submission Date</TableHead>
               <TableHead className="w-[200px]">Email</TableHead>
-              <TableHead className="w-[150px]">Shopee Username</TableHead>
-              <TableHead className="w-[180px]">Seller/Merchant Name</TableHead>
-              <TableHead className="w-[150px] text-right">Requested Amount</TableHead>
+              <TableHead className="w-[150px]">Username</TableHead>
+              <TableHead className="w-[180px]">Company Name</TableHead>
+              <TableHead className="w-[180px] text-right">WHT.23 Reimbursement Amount</TableHead>
               <TableHead className="w-[120px]">AI Suggestion</TableHead>
               <TableHead className="w-[100px]">Status</TableHead>
               <TableHead className="w-[100px]">Action</TableHead>
