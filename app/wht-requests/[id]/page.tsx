@@ -409,50 +409,14 @@ export default function RequestDetailPage() {
       </div>
 
       {/* Basic Info Section */}
-      <div className="border-b bg-muted/20 px-6 py-3">
-        <div className="flex items-center gap-8 text-sm">
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Submission Date</span>
-            <span className="font-medium">{request.submissionDate}</span>
-          </div>
-          <div className="h-8 w-px bg-border" />
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Email</span>
-            <span className="font-medium">{request.requestorEmail}</span>
-          </div>
-          <div className="h-8 w-px bg-border" />
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Username</span>
-            <span className="font-medium">{request.usernameShopee || request.merchantName || '\u2014'}</span>
-          </div>
-          <div className="h-8 w-px bg-border" />
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Company Name</span>
-            <span className="font-medium">{request.sellerCompanyName || request.syncedCompanyName || '\u2014'}</span>
-          </div>
-          <div className="h-8 w-px bg-border" />
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">WHT.23 Reimbursement Amount</span>
-            <span className="font-medium tabular-nums">
-              {new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(request.requestedReimbursementAmount)}
-            </span>
-          </div>
-          <div className="h-8 w-px bg-border" />
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-muted-foreground">AI Suggestion</span>
-            <Badge
-              variant={
-                request.aiSuggestion === 'Approve'
-                  ? 'default'
-                  : request.aiSuggestion === 'Reject'
-                  ? 'destructive'
-                  : 'secondary'
-              }
-              className="mt-0.5 w-fit text-[10px]"
-            >
-              {request.aiSuggestion}
-            </Badge>
-          </div>
+      <div className="border-b border-l-4 border-l-primary/60 bg-muted/10 px-6 py-2.5">
+        <div className="flex items-center gap-6 text-[13px]">
+          <span className="text-muted-foreground">Submission Date: <span className="font-semibold text-foreground">{request.submissionDate}</span></span>
+          <span className="text-muted-foreground">Email: <span className="font-semibold text-foreground">{request.requestorEmail}</span></span>
+          <span className="text-muted-foreground">Username: <span className="font-semibold text-foreground">{request.usernameShopee || request.merchantName || '\u2014'}</span></span>
+          <span className="text-muted-foreground">Company Name: <span className="font-semibold text-foreground">{request.sellerCompanyName || request.syncedCompanyName || '\u2014'}</span></span>
+          <span className="text-muted-foreground">WHT.23 Reimbursement Amount: <span className="font-semibold text-foreground tabular-nums">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(request.requestedReimbursementAmount)}</span></span>
+          <span className="text-muted-foreground">AI Suggestion: <Badge variant={request.aiSuggestion === 'Approve' ? 'default' : request.aiSuggestion === 'Reject' ? 'destructive' : 'secondary'} className="ml-1 text-[10px]">{request.aiSuggestion}</Badge></span>
         </div>
       </div>
 
