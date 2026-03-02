@@ -23,7 +23,7 @@ const defaultFilters: FilterState = {
   search: "",
   searchField: "all",
   missingDocs: "All",
-  amountRange: "All",
+  amountRange: {},
   sla: "All"
 };
 

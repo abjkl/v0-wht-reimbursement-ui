@@ -11,7 +11,7 @@ export function FiltersBar() {
 
   return (
     <div className="space-y-4 rounded-lg border bg-card p-4">
-      {/* Core Filters */}
+      {/* Row 1: Search, Status, AI Suggestion */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">Search</Label>
@@ -59,27 +59,6 @@ export function FiltersBar() {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs text-muted-foreground">Submission Date Range</Label>
-          <div className="flex gap-2">
-            <Input
-              type="date"
-              value={filters.dateRange.start || ''}
-              onChange={(e) => setFilters({ dateRange: { ...filters.dateRange, start: e.target.value } })}
-              placeholder="Start"
-            />
-            <Input
-              type="date"
-              value={filters.dateRange.end || ''}
-              onChange={(e) => setFilters({ dateRange: { ...filters.dateRange, end: e.target.value } })}
-              placeholder="End"
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Operational Filters */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">AI Suggestion</Label>
           <Select
             value={filters.aiSuggestion || 'All'}
@@ -96,23 +75,59 @@ export function FiltersBar() {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Row 2: Submission Date Range, Amount Range */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">Submission Date Range</Label>
+          <div className="flex gap-2">
+            <Input
+              type="date"
+              value={filters.dateRange.start || ''}
+              onChange={(e) => setFilters({ dateRange: { ...filters.dateRange, start: e.target.value } })}
+              placeholder="Start"
+            />
+            <Input
+              type="date"
+              value={filters.dateRange.end || ''}
+              onChange={(e) => setFilters({ dateRange: { ...filters.dateRange, end: e.target.value } })}
+              placeholder="End"
+            />
+          </div>
+        </div>
 
         <div className="space-y-2">
           <Label className="text-xs text-muted-foreground">Amount Range</Label>
-          <Select
-            value={filters.amountRange}
-            onValueChange={(value: any) => setFilters({ amountRange: value })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="All">All Amounts</SelectItem>
-              <SelectItem value="<= 1000000">{'<='} Rp 1,000,000</SelectItem>
-              <SelectItem value="1000001-10000000">Rp 1M - 10M</SelectItem>
-              <SelectItem value="> 10000000">{'>'} Rp 10,000,000</SelectItem>
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              placeholder="Min"
+              value={filters.amountRange.min ?? ''}
+              onChange={(e) =>
+                setFilters({
+                  amountRange: {
+                    ...filters.amountRange,
+                    min: e.target.value ? Number(e.target.value) : undefined,
+                  },
+                })
+              }
+            />
+            <span className="text-xs text-muted-foreground shrink-0">to</span>
+            <Input
+              type="number"
+              placeholder="Max"
+              value={filters.amountRange.max ?? ''}
+              onChange={(e) =>
+                setFilters({
+                  amountRange: {
+                    ...filters.amountRange,
+                    max: e.target.value ? Number(e.target.value) : undefined,
+                  },
+                })
+              }
+            />
+          </div>
         </div>
       </div>
 

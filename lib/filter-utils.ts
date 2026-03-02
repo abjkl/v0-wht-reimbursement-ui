@@ -113,18 +113,12 @@ export function filterRequests(
     }
 
     // Amount range filter
-    if (filters.amountRange !== "All") {
+    if (filters.amountRange.min != null || filters.amountRange.max != null) {
       const amount = req.requestedReimbursementAmount;
-      if (filters.amountRange === "<= 1000000" && amount > 1000000) {
+      if (filters.amountRange.min != null && amount < filters.amountRange.min) {
         return false;
       }
-      if (
-        filters.amountRange === "1000001-10000000" &&
-        (amount <= 1000000 || amount > 10000000)
-      ) {
-        return false;
-      }
-      if (filters.amountRange === "> 10000000" && amount <= 10000000) {
+      if (filters.amountRange.max != null && amount > filters.amountRange.max) {
         return false;
       }
     }
